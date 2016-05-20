@@ -1,0 +1,49 @@
+
+.label {
+	/*-fx-background-color: red;*/
+}
+
+#top {
+	-fx-background-color: red;
+}
+
+#left {
+	-fx-background-color: blue;
+}
+
+#right {
+	-fx-background-color: green;
+}
+
+#center {
+	-fx-background-color: yellow;
+}
+
+#bottom {
+	-fx-background-color: purple;
+}
+
+#sa {
+	-fx-background-color: grey;
+}
+
+#sp {
+	-fx-background-color: brown;
+}
+
+
+
+
+
+
+.buttons {
+	-fx-background-color: grey;
+}
+
+.title {
+	-fx-background-color: white;
+}
+
+.compte {
+	-fx-background-color: aliceblue;
+}
