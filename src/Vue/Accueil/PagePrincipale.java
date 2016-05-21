@@ -10,7 +10,7 @@ import Serializable.Personnages.HCPersonnage;
 import Vue.Accueil.Content.Accueil;
 import Vue.Accueil.Content.AttenteCombat;
 import Vue.Accueil.Content.Content;
-import Vue.Accueil.Content.Persos;
+import Vue.Accueil.Content.CreationPerso;
 import Vue.Ecran;
 import java.util.HashMap;
 import javafx.geometry.Pos;
@@ -46,7 +46,7 @@ public class PagePrincipale extends Ecran<BorderPane> {
 
 	public final Accueil accueil;
 	public final AttenteCombat attente;
-	public final Content persos;
+	public final CreationPerso creaPerso;
 
 	public PagePrincipale() {
 		super(new BorderPane(), WIDTH, HEIGHT, Color.BURLYWOOD);
@@ -93,7 +93,7 @@ public class PagePrincipale extends Ecran<BorderPane> {
 
 		accueil = new Accueil();
 		attente = new AttenteCombat();
-		persos = new Persos();
+		creaPerso = new CreationPerso();
 		
 		setContent(accueil);
 	}
@@ -119,18 +119,6 @@ public class PagePrincipale extends Ecran<BorderPane> {
 		bAccueil.setDisable(false);
 		bAmis.setDisable(false);
 		bMenu.setDisable(false);
-	}
-
-	public void accueil() {
-		allEnable();
-		bAccueil.setDisable(true);
-		setContent(accueil);
-	}
-
-	public void persos() {
-		allEnable();
-		bPersos.setDisable(true);
-		setContent(persos);
 	}
 
 }

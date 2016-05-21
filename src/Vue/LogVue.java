@@ -10,13 +10,10 @@ import static Controleur.LogControleur.LogState.NO_MDP;
 import static Controleur.LogControleur.LogState.NO_PSEUDO;
 import static Controleur.LogControleur.LogState.OK;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -52,6 +49,7 @@ public class LogVue extends Ecran<VBox> {
 		fMdp = new PasswordField();
 
 		submit = new Button("Se connecter");
+		submit.setDefaultButton(true);
 
 		lDetails = new Label();
 		lDetails.setTextFill(Color.RED);

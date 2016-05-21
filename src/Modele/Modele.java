@@ -42,4 +42,12 @@ public class Modele {
 		}
 	}
 
+	public static void stop() {
+		try {
+			CLIENT.close();
+		} catch (NullPointerException ex) {
+
+		}
+	}
+
 }

@@ -86,9 +86,9 @@ public class LogControleur extends Controleur<LogVue> {
 		HCSortPassif sp1 = new HCSortPassif("TestSP1", new HCNiveau(4, 187), "Description de TestSP1");
 		HCSortPassif sp2 = new HCSortPassif("TestSP2", new HCNiveau(0, 12), "Description de TestSP2");
 
-		HCPersonnage perso1 = new HCPersonnage(12, "Perso1", "Classe1", 8, 125, 38000, 5000, 100, 0,
+		HCPersonnage perso1 = new HCPersonnage(12, 0, "Perso1", "Classe1", 8, 125, 38000, 5000, 100, 0,
 				new HCSortActif[]{sa1, sa2, sa3}, new HCSortPassif[]{sp1, sp2});
-		HCPersonnage perso2 = new HCPersonnage(13, "Perso2", "Classe2", 2, 120, 35000, 4000, 110, 10,
+		HCPersonnage perso2 = new HCPersonnage(13, 0, "Perso2", "Classe2", 2, 120, 35000, 4000, 110, 10,
 				new HCSortActif[]{sa3}, new HCSortPassif[]{sp2});
 
 		HashMap<String, int[]> equipes = new HashMap();

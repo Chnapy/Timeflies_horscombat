@@ -5,7 +5,6 @@
  */
 package Modele.Reseau;
 
-import static Controleur.MainControleur.EXEC;
 import Modele.Modele;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -28,9 +27,11 @@ public class MoteurReseau implements Runnable {
 	private final ObjectOutputStream out;
 	private final ObjectInputStream in;
 	private boolean isAlive;
+	private final Scanner sc;
 
 	public MoteurReseau() throws IOException, ClassNotFoundException {
 		socket = new Socket(SERVERNAME, SERVERPORT);
+		System.out.println("Connecté au serveur");
 		System.out.println("Socket client: " + socket);
 
 		out = new ObjectOutputStream(socket.getOutputStream());
@@ -39,15 +40,15 @@ public class MoteurReseau implements Runnable {
 		in = new ObjectInputStream(socket.getInputStream());
 		isAlive = true;
 
-		Terminal terminal = new Terminal();
-		EXEC.submit(terminal);
+		sc = new Scanner(System.in);
+//		Terminal terminal = new Terminal(sc);
+//		EXEC.submit(terminal);
 
 		System.out.println("Client a cree les flux");
 	}
 
 	@Override
 	public void run() {
-		System.out.println("Connecté au serveur");
 		int attente = 0;
 		while (isAlive) {
 
@@ -56,7 +57,7 @@ public class MoteurReseau implements Runnable {
 				Platform.runLater(() -> Modele.receiveFromServer(o));
 				attente = 0;
 			} catch (IOException | ClassNotFoundException ex) {
-				if (attente >= 10) {
+				if (attente >= 10 || !isAlive) {
 					break;
 				} else {
 					attente++;
@@ -70,8 +71,9 @@ public class MoteurReseau implements Runnable {
 			}
 		}
 
-		System.out.println("Déconnection du client");
-		close();
+		if (!socket.isClosed()) {
+			close();
+		}
 	}
 
 	public void send(Object objToSend) throws IOException {
@@ -88,6 +90,7 @@ public class MoteurReseau implements Runnable {
 	}
 
 	public void close() {
+		System.out.println("Déconnection du client");
 		isAlive = false;
 		try {
 			in.close();
@@ -101,16 +104,20 @@ public class MoteurReseau implements Runnable {
 
 		private final Scanner sc;
 
-		public Terminal() {
-			sc = new Scanner(System.in);
+		public Terminal(Scanner sc) {
+			this.sc = sc;
 		}
 
 		@Override
 		public void run() {
 			System.out.println("Terminal lancé");
-			while (isAlive && sc.hasNextLine()) {
-				commande(sc.nextLine());
+			try {
+				while (isAlive && sc.hasNextLine()) {
+					commande(sc.nextLine());
+				}
+			} catch (IllegalStateException ex) {
 			}
+//			sc.close();
 			System.out.println("Terminal stoppé");
 		}
 

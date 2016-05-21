@@ -21,7 +21,7 @@ public class MainControleur {
 	public static final boolean DEBUG = true;
 	private static final Runtime RUN = Runtime.getRuntime();
 	private static final String[] CMD = {"java", "-jar", "tfCombat.jar"};
-	public static final ExecutorService EXEC = Executors.newFixedThreadPool(128);
+	public static final ExecutorService EXEC = Executors.newFixedThreadPool(16);
 	public static MainControleur CONTROLEUR;
 
 	private final Vue vue;
@@ -35,6 +35,17 @@ public class MainControleur {
 
 		logC = new LogControleur(vue.logScene);
 		accueilC = new AccueilControleur(vue.pagePrincipale);
+		
+		vue.primaryStage.setOnCloseRequest((e) -> {
+			stop();
+		});
+	}
+	
+	public void stop() {
+		System.out.println("Arret client");
+		vue.stop();
+		Modele.stop();
+		EXEC.shutdown();
 	}
 
 	public void start() {
