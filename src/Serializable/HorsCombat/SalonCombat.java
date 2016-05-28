@@ -20,10 +20,10 @@ public class SalonCombat implements HorsCombat {
 
 		private static final long serialVersionUID = -156415641401283422L;
 
-		public final HorsCombat.TypeCombat type;
+		public final TypeCombat type;
 		public final ArrayList<Long> idPersos;
 
-		public AskCombat(HorsCombat.TypeCombat type, ArrayList<HCPersonnage> persos) {
+		public AskCombat(TypeCombat type, ArrayList<HCPersonnage> persos) {
 			this.type = type;
 			this.idPersos = new ArrayList();
 			for (HCPersonnage perso : persos) {
@@ -51,17 +51,17 @@ public class SalonCombat implements HorsCombat {
 
 		private static final long serialVersionUID = 7575622563505371673L;
 
-		public final ArrayList<HorsCombat.DonneeJoueur> donneesJoueur;
+		public final ArrayList<DonneeJoueur> donneesJoueur;
 		public final MapSerializable mapS;
 
-		public PartieTrouvee(ArrayList<HorsCombat.DonneeJoueur> donneesJoueur, MapSerializable mapS) {
+		public PartieTrouvee(ArrayList<DonneeJoueur> donneesJoueur, MapSerializable mapS) {
 			this.donneesJoueur = donneesJoueur;
 			this.mapS = mapS;
 		}
 
 		public int getNbrPersos() {
 			int nbr = 0;
-			for (HorsCombat.DonneeJoueur dj : donneesJoueur) {
+			for (DonneeJoueur dj : donneesJoueur) {
 				nbr += dj.persos.size();
 			}
 			return nbr;
@@ -72,9 +72,9 @@ public class SalonCombat implements HorsCombat {
 
 		private static final long serialVersionUID = 2690672833470182144L;
 
-		public final HorsCombat.DonneeJoueur dj;
+		public final DonneeJoueur dj;
 
-		public NewJoueur(HorsCombat.DonneeJoueur dj) {
+		public NewJoueur(DonneeJoueur dj) {
 			this.dj = dj;
 		}
 	}
@@ -87,14 +87,6 @@ public class SalonCombat implements HorsCombat {
 
 		public RmJoueur(long idJoueur) {
 			this.idJoueur = idJoueur;
-		}
-	}
-
-	public static class LancementCombat extends SalonCombat {
-
-		private static final long serialVersionUID = -3229558049323216851L;
-
-		public LancementCombat() {
 		}
 	}
 

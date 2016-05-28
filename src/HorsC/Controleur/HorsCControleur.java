@@ -17,10 +17,10 @@ import Serializable.HorsCombat.GestionPersos.IdCreaPerso;
 import Serializable.HorsCombat.HorsCombat.TypeCombat;
 import Serializable.HorsCombat.SalonCombat;
 import Serializable.HorsCombat.SalonCombat.EstPret;
-import Serializable.HorsCombat.SalonCombat.LancementCombat;
 import Serializable.HorsCombat.SalonCombat.NewJoueur;
 import Serializable.HorsCombat.SalonCombat.PartieTrouvee;
 import Serializable.HorsCombat.SalonCombat.RmJoueur;
+import Serializable.InCombat.DebutCombat;
 import java.util.ArrayList;
 
 /**
@@ -118,9 +118,6 @@ public class HorsCControleur extends Controleur<HorsCVue> {
 			ecran.attente.rmJoueur(((RmJoueur) pack).idJoueur);
 		} else if (pack instanceof EstPret) {
 			ecran.attente.estPret(((EstPret) pack).idJoueur, ((EstPret) pack).pret);
-		} else if (pack instanceof LancementCombat) {
-			ecran.attente.lancementCombat();
-			MainControleur.lancementCombat();
 		}
 	}
 
@@ -130,6 +127,8 @@ public class HorsCControleur extends Controleur<HorsCVue> {
 			gestionPersos((GestionPersos) pack);
 		} else if (pack instanceof SalonCombat) {
 			salonCombat((SalonCombat) pack);
+		} else if (pack instanceof DebutCombat) {
+			MainControleur.lancementCombat((DebutCombat) pack);
 		}
 	}
 

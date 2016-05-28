@@ -42,12 +42,18 @@ public interface HorsCombat extends Serializable {
 
 		private static final long serialVersionUID = -848412085536363880L;
 
+		public final long id;
+		public final long idClasse;
 		public final int niveau;
 		public final String nomClasse;
+		public final String nomDonne;
 
-		public DonneePerso(int niveau, String nomClasse) {
+		public DonneePerso(long id, long idClasse, int niveau, String nomClasse, String nomDonne) {
+			this.id = id;
+			this.idClasse = idClasse;
 			this.niveau = niveau;
 			this.nomClasse = nomClasse;
+			this.nomDonne = nomDonne;
 		}
 
 	}

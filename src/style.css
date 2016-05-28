@@ -1,4 +1,140 @@
 
+* {
+	/*-fx-border-color: white;*/
+}
+
+.jauge-bg {
+	-fx-fill: white;
+}
+
+.jauge-fg {
+	-fx-fill: blue;
+}
+
+.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg {
+    -fx-background-color: red;
+	-fx-fill: red;
+}
+
+.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg {
+    -fx-background-color: yellow;
+	-fx-fill: yellow;
+}
+
+.tempss .determinate-indicator > .progress, .tempss .jauge-fg {
+    -fx-background-color: orange;
+	-fx-fill: orange;
+}
+
+.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg {
+    -fx-background-color: lightgreen;
+	-fx-fill: lightgreen;
+}
+
+.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg {
+    -fx-background-color: brown;
+	-fx-fill: brown;
+}
+
+.initiative .determinate-indicator > .progress, .initiative .jauge-fg {
+    -fx-background-color: cornflowerblue;
+	-fx-fill: cornflowerblue;
+}
+
+#hud {
+	-fx-background-color: blue;
+}
+
+#barreSA {
+	-fx-background-color: red;
+}
+
+#chat {
+	-fx-background-color: green;
+}
+
+#minimap {
+	-fx-background-color: chocolate;
+}
+
+#pileA {
+	-fx-background-color: lightcoral;
+}
+
+#pileA .progress-bar:indeterminate > .bar {
+    -fx-background-color: transparent;
+}
+
+#pileA .progress-bar, .progress-bar > .track {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+	-fx-background-radius: 0;
+}
+
+#pileA .progress-bar .bar { 
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+	-fx-background-radius: 0;
+}
+
+#pileA .progress-indicator .percentage {
+	-fx-fill: null;
+}
+
+.envTours {
+	-fx-background-color: dimgrey;
+	-fx-text-fill: white;
+	-fx-padding: 1;
+}
+
+.jauge_circu .percentage {
+	-fx-fill: null;
+}
+
+.jauge_circu .label {
+	-fx-fill: red;
+}
+
+#barres {
+	-fx-background-color: aqua;
+}
+
+#timeline {
+	-fx-background-color: bisque;
+}
+
+#divers {
+	-fx-background-color: bisque;
+}
+
+#entiteCours {
+	-fx-background-color: darkgreen;
+}
+
+.sortBut:selected {
+	-fx-effect: innershadow(gaussian, white, 10, 0.5, 0, 0);
+}
+
+.sortBut .label {
+	-fx-text-fill: white;
+}
+
+.sortAtemps {
+	-fx-background-color: blue;
+}
+
+.sortAcooldown {
+	-fx-background-color: chocolate;
+}
+
+.sortAfatigue {
+	-fx-background-color: green;
+}
+
+.sortAniveau {
+	-fx-background-color: grey;
+}
+
 .label {
 	/*-fx-background-color: red;*/
 }

@@ -96,6 +96,21 @@ public class AttenteCombat extends Content {
 			getJoueurList(idJoueur).pret(pret);
 		} catch (NullPointerException ex) {
 		}
+		JoueurList jl;
+		for (int i = 0; i < joueursBox.getChildren().size(); i++) {
+			jl = (JoueurList) joueursBox.getChildren().get(i);
+			if (!jl.pret) {
+				return;
+			}
+		}
+		if(joueursBox.getChildren().size() > 1) {
+			waitForCombat();
+		}
+	}
+	
+	private void waitForCombat() {
+		addText("Tous les joueurs sont prêt.\nLancement du combat...");
+		this.setDisable(true);
 	}
 
 	public void newAttente(TypeCombat type) {
@@ -129,10 +144,6 @@ public class AttenteCombat extends Content {
 		addText("Un joueur rejoint la partie : " + dj.nom + " - " + dj.persos.size() + " persos.");
 		joueursBox.getChildren().add(new JoueurList(dj));
 		readyBut.setDisable(false);
-	}
-
-	public void lancementCombat() {
-		addText("Lancement du combat !");
 	}
 
 	public void rmJoueur(long idJoueur) {
@@ -171,6 +182,7 @@ public class AttenteCombat extends Content {
 		private final ImageView pretImageView;
 		private final Label niveau;
 		private final Label pseudo;
+		public boolean pret;
 
 		public JoueurList(DonneeJoueur dj) {
 
@@ -198,6 +210,7 @@ public class AttenteCombat extends Content {
 		}
 
 		public final void pret(boolean pret) {
+			this.pret = pret;
 			if (pret) {
 				pretImageView.setImage(pretImage);
 			} else {
