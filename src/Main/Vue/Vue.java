@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -37,7 +39,7 @@ public class Vue {
 
 	public static void init(Stage primaryStage) {
 		Vue.PRIMARYSTAGE = primaryStage;
-		
+
 		loadAllImages();
 
 //		primaryStage.setResizable(false);
@@ -93,7 +95,7 @@ public class Vue {
 
 	public static void exception(String message, Exception ex) {
 		ex.printStackTrace(alertPW);
-		
+
 		exAlert.setHeaderText(message);
 		alertTA.setText(alertSW.toString());
 		exAlert.show();
@@ -106,13 +108,13 @@ public class Vue {
 	public static void info(String content) {
 		alert(AlertType.INFORMATION, "Info", content);
 	}
-	
+
 	public static boolean ask(String title, String content) {
 		alert.setAlertType(AlertType.CONFIRMATION);
 		alert.setTitle(title);
 		alert.setHeaderText(null);
 		alert.setContentText(content);
-		
+
 		return alert.showAndWait().get() == ButtonType.OK;
 	}
 
@@ -122,6 +124,19 @@ public class Vue {
 		alert.setHeaderText(null);
 		alert.setContentText(content);
 		alert.show();
+	}
+
+	public static final void turnOffPickOnBoundsFor(Node n) {
+		try {
+			n.setPickOnBounds(false);
+		} catch (RuntimeException re) {
+		}
+		n.setOnMouseClicked((e) -> System.out.println(n));
+		if (n instanceof Parent) {
+			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
+				turnOffPickOnBoundsFor(c);
+			}
+		}
 	}
 
 	public static void loadAllImages() {

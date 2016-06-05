@@ -18,11 +18,13 @@ public abstract class InSort implements Serializable {
 	public final int idClasseSort;
 	public final String nom;
 	public final String description;
+	public final int niveau;
 
-	public InSort(int idClasseSort, String nom, String description) {
+	public InSort(int idClasseSort, String nom, String description, int niveau) {
 		this.idClasseSort = idClasseSort;
 		this.nom = nom;
 		this.description = description;
+		this.niveau = niveau;
 	}
 
 }

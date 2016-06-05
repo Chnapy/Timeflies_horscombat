@@ -15,12 +15,13 @@ import Serializable.HorsCombat.GestionPersos;
 import Serializable.HorsCombat.GestionPersos.AllClassePerso;
 import Serializable.HorsCombat.GestionPersos.IdCreaPerso;
 import Serializable.HorsCombat.HorsCombat.TypeCombat;
+import Serializable.HorsCombat.Map.MapSerializable;
 import Serializable.HorsCombat.SalonCombat;
 import Serializable.HorsCombat.SalonCombat.EstPret;
 import Serializable.HorsCombat.SalonCombat.NewJoueur;
 import Serializable.HorsCombat.SalonCombat.PartieTrouvee;
 import Serializable.HorsCombat.SalonCombat.RmJoueur;
-import Serializable.InCombat.DebutCombat;
+import Serializable.InCombat.ChargementCombat;
 import java.util.ArrayList;
 
 /**
@@ -28,9 +29,12 @@ import java.util.ArrayList;
  *
  */
 public class HorsCControleur extends Controleur<HorsCVue> {
+	
+	private MapSerializable mapS;
 
 	public HorsCControleur() {
 		super(new HorsCVue());
+		mapS = null;
 	}
 
 	@Override
@@ -111,7 +115,8 @@ public class HorsCControleur extends Controleur<HorsCVue> {
 
 	private void salonCombat(SalonCombat pack) {
 		if (pack instanceof PartieTrouvee) {
-			ecran.attente.partieTrouvee(((PartieTrouvee) pack).donneesJoueur, ((PartieTrouvee) pack).getNbrPersos(), ((PartieTrouvee) pack).mapS);
+			mapS = ((PartieTrouvee) pack).mapS;
+			ecran.attente.partieTrouvee(((PartieTrouvee) pack).donneesJoueur, ((PartieTrouvee) pack).getNbrPersos(), mapS);
 		} else if (pack instanceof NewJoueur) {
 			ecran.attente.newJoueur(((NewJoueur) pack).dj);
 		} else if (pack instanceof RmJoueur) {
@@ -127,8 +132,8 @@ public class HorsCControleur extends Controleur<HorsCVue> {
 			gestionPersos((GestionPersos) pack);
 		} else if (pack instanceof SalonCombat) {
 			salonCombat((SalonCombat) pack);
-		} else if (pack instanceof DebutCombat) {
-			MainControleur.lancementCombat((DebutCombat) pack);
+		} else if (pack instanceof ChargementCombat) {
+			MainControleur.lancementCombat((ChargementCombat) pack, mapS);
 		}
 	}
 

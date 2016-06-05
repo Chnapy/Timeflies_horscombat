@@ -13,8 +13,8 @@ public class InSortPassif extends InSort {
 
 	private static final long serialVersionUID = -7081683547935415774L;
 
-	public InSortPassif(int idClasseSort, String nom, String description) {
-		super(idClasseSort, nom, description);
+	public InSortPassif(int idClasseSort, String nom, String description, int niveau) {
+		super(idClasseSort, nom, description, niveau);
 	}
 
 }

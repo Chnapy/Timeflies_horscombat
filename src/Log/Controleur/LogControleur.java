@@ -78,7 +78,6 @@ public class LogControleur extends Controleur<LogVue> {
 	}
 
 	private void answerServeur(AnswerLogs pack) {
-		System.out.println("TEST");
 		if (!pack.accepted) {
 			ecran.submit(BAD_LOGS);
 		} else {

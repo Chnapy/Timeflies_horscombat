@@ -3,6 +3,134 @@
 	/*-fx-border-color: white;*/
 }
 
+#hud {
+	/*visibility: hidden;*/
+}
+
+#grille {
+	-fx-background-color: red;
+}
+
+#tilemap {
+	-fx-background-color: dimgrey;
+}
+
+/*
+ * Variables
+ */
+* {
+	-fx-vitalite: red;
+	-fx-tempsa: goldenrod;
+	-fx-tempss: orange;
+	-fx-vitesse: lightgreen;
+	-fx-fatigue: brown;
+	-fx-initiative: cornflowerblue;
+	-fx-niveau: dimgrey;
+	-fx-cooldown: green;
+	-fx-desc: white;
+	-fx-tsimple: white;
+	-fx-tecran: #44FF44;
+	-fx-ttrou: black;
+	-fx-tobstacle: red;
+	-fx-deplacement: green;
+	-fx-zoneportee: #0000FF88;
+	-fx-zoneaction: #FF000088;
+	-fx-ciblesort-stroke: red;
+}
+
+.tuile .polygon {
+	-fx-opacity: 0.75;
+}
+
+.tuile.simple .polygon {
+	-fx-fill: -fx-tsimple;
+}
+
+.tuile.ecran .polygon {
+	-fx-fill: -fx-tecran;
+}
+
+.tuile.trou .polygon {
+	-fx-fill: -fx-ttrou;
+}
+
+.tuile.obstacle .polygon {
+	-fx-fill: -fx-tobstacle;
+}
+
+.tuile.hover .polygon {
+	-fx-opacity: 1;
+	-fx-effect: dropshadow(gaussian, white, 10, 0, 0, 0);
+}
+
+.tuile.deplacement .polygon {
+	/*-fx-fill: green;*/
+	-fx-opacity: 1;
+}
+
+.tuile .deplacementLine {
+	-fx-stroke: -fx-deplacement;
+	-fx-fill: transparent;
+	-fx-stroke-width: 5;
+	-fx-stroke-line-cap: round;
+	visibility: hidden;
+}
+
+.tuile.deplacement .anchor, .tuile.deplacement .deplacementLine, .tuile.zone_portee .cible_sort, .tuile.zone_action .cible_sort {
+	visibility: visible;
+}
+
+.tuile.zone_portee .polygon {
+	-fx-effect: innershadow(gaussian, -fx-zoneportee, 100, 1, 0, 0);
+}
+
+.tuile.zone_action .polygon {
+	-fx-effect: innershadow(gaussian, -fx-zoneaction, 100, 1, 0, 0);
+}
+
+.tuile .anchor {
+	-fx-stroke: -fx-deplacement;
+	visibility: hidden;
+}
+
+.tuile .begin {
+	-fx-fill: white;
+}
+
+.tuile .end {
+	-fx-fill: -fx-deplacement;
+}
+
+.tuile .cible_sort {
+	-fx-fill: -fx-ciblesort;
+	-fx-stroke-width: 2;
+	visibility: hidden;
+}
+
+.cercle-label {
+	-fx-background-radius: 5em; 
+}
+
+.bulle {
+	-fx-font-size: 14;
+}
+
+.bulle-titre {
+	-fx-font-size: 18;
+	-fx-font-weight: bold;
+}
+
+.desc {
+	-fx-text-fill: -fx-desc; 
+}
+
+#listEntites {
+	-fx-background-color: transparent;
+	-fx-background: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
 .jauge-bg {
 	-fx-fill: white;
 }
@@ -11,54 +139,113 @@
 	-fx-fill: blue;
 }
 
-.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg {
-    -fx-background-color: red;
-	-fx-fill: red;
+.vignette {
+	-fx-background-color: dimgrey;
 }
 
-.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg {
-    -fx-background-color: yellow;
-	-fx-fill: yellow;
+.vignette .topEntite {
+	-fx-padding: 0 2 0 2;
 }
 
-.tempss .determinate-indicator > .progress, .tempss .jauge-fg {
-    -fx-background-color: orange;
-	-fx-fill: orange;
+.topEntite .niveau {
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
 }
 
-.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg {
-    -fx-background-color: lightgreen;
-	-fx-fill: lightgreen;
+.topEntite .nom {
+	-fx-text-fill: white;
 }
 
-.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg {
-    -fx-background-color: brown;
-	-fx-fill: brown;
+.cooldown .determinate-indicator > .progress, .cooldown .jauge-fg, .cercle-label.cooldown {
+    -fx-background-color: -fx-cooldownu;
+	-fx-fill: -fx-cooldown;
 }
 
-.initiative .determinate-indicator > .progress, .initiative .jauge-fg {
-    -fx-background-color: cornflowerblue;
-	-fx-fill: cornflowerblue;
+.bulle .cooldown, .sortBut .cooldown {
+	-fx-background-color: -fx-cooldown;
+}
+
+.niveau .determinate-indicator > .progress, .niveau .jauge-fg, .cercle-label.niveau {
+    -fx-background-color: -fx-niveau;
+	-fx-fill: -fx-niveau;
+}
+
+.bulle .niveau, .sortBut .niveau {
+	-fx-background-color: -fx-niveau;
+}
+
+.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg, .cercle-label.vitalite {
+    -fx-background-color: -fx-vitalite;
+	-fx-fill: -fx-vitalite;
+}
+
+.bulle .vitalite {
+	-fx-background-color: -fx-vitalite;
+}
+
+.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg, .cercle-label.tempsa {
+    -fx-background-color: -fx-tempsa;
+	-fx-fill: -fx-tempsa;
+}
+
+.bulle .tempsa, .sortBut .tempsa {
+	-fx-background-color: -fx-tempsa;
+}
+
+.tempss .determinate-indicator > .progress, .tempss .jauge-fg, .cercle-label.tempss {
+    -fx-background-color: -fx-tempss;
+	-fx-fill: -fx-tempss;
+}
+
+.bulle .tempss {
+	-fx-background-color: -fx-tempss;
+}
+
+.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg, .cercle-label.vitesse {
+    -fx-background-color: -fx-vitesse;
+	-fx-fill: -fx-vitesse;
+}
+
+.bulle .vitesse {
+	-fx-background-color: -fx-vitesse;
+}
+
+.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg, .cercle-label.fatigue {
+    -fx-background-color: -fx-fatigue;
+	-fx-fill: -fx-fatigue;
+}
+
+.bulle .fatigue, .sortBut .fatigue {
+	-fx-background-color: -fx-fatigue;
+}
+
+.initiative .determinate-indicator > .progress, .initiative .jauge-fg, .cercle-label.initiative {
+    -fx-background-color: -fx-initiative;
+	-fx-fill: -fx-initiative;
+}
+
+.bulle .initiative {
+	-fx-background-color: -fx-initiative;
 }
 
 #hud {
-	-fx-background-color: blue;
+	/*-fx-background-color: blue;*/
 }
 
 #barreSA {
-	-fx-background-color: red;
+	/*-fx-background-color: red;*/
 }
 
 #chat {
-	-fx-background-color: green;
+	/*-fx-background-color: green;*/
 }
 
 #minimap {
-	-fx-background-color: chocolate;
+	/*-fx-background-color: chocolate;*/
 }
 
 #pileA {
-	-fx-background-color: lightcoral;
+	/*-fx-background-color: lightcoral;*/
 }
 
 #pileA .progress-bar:indeterminate > .bar {
@@ -96,19 +283,19 @@
 }
 
 #barres {
-	-fx-background-color: aqua;
+	/*-fx-background-color: aqua;*/
 }
 
 #timeline {
-	-fx-background-color: bisque;
+	/*-fx-background-color: bisque;*/
 }
 
 #divers {
-	-fx-background-color: bisque;
+	/*-fx-background-color: bisque;*/
 }
 
 #entiteCours {
-	-fx-background-color: darkgreen;
+	/*-fx-background-color: darkgreen;*/
 }
 
 .sortBut:selected {
@@ -117,22 +304,6 @@
 
 .sortBut .label {
 	-fx-text-fill: white;
-}
-
-.sortAtemps {
-	-fx-background-color: blue;
-}
-
-.sortAcooldown {
-	-fx-background-color: chocolate;
-}
-
-.sortAfatigue {
-	-fx-background-color: green;
-}
-
-.sortAniveau {
-	-fx-background-color: grey;
 }
 
 .label {
