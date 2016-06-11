@@ -18,7 +18,8 @@ public class Data {
 	public static final int SERVERPORT = 42666;
 	public static final int CONNECTION_TIMEOUT = 10000;	//ms
 	
-	public static final int DEPLACEMENT_IDCLASSE = 0;
+	public static final int DEPLACEMENT_IDCLASSE = -1;
+	public static final int ROTATION_IDCLASSE = -2;
 
 	public static final String PATH_IMG = "assets/img/";
 
@@ -33,4 +34,7 @@ public class Data {
 	public static final String ENTITE_ICONES_EXT = "png";
 	public static final String PATH_ENTITE_SPRITES = PATH_ENTITE + "sprites/";
 	public static final String ENTITE_SPRITES_EXT = "png";
+	
+	public static final String PATH_LANG = "assets/strings/";
+	public static final String FILE_MAIN_LANG = "main.xml";
 }

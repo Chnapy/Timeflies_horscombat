@@ -17,6 +17,7 @@ import Main.Controleur.MainControleur.typeErreur;
 import Main.Modele.Data;
 import Main.Modele.Modele;
 import Main.Vue.Vue;
+import Serializable.Log.Log;
 import Serializable.Log.Log.AnswerLogs;
 import Serializable.Log.Log.ResultVersion;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import java.io.IOException;
  * LogControleur.java
  *
  */
-public class LogControleur extends Controleur<LogVue> {
+public class LogControleur extends Controleur<LogVue, Log> {
 
 	public static enum LogState {
 
@@ -59,7 +60,7 @@ public class LogControleur extends Controleur<LogVue> {
 	}
 
 	@Override
-	public void packetRecu(Object pack) {
+	public void packetRecu(Log pack) {
 		if (pack instanceof ResultVersion) {
 			resultVersion((ResultVersion) pack);
 		} else if (pack instanceof AnswerLogs) {

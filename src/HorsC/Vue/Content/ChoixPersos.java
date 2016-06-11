@@ -5,6 +5,7 @@
  */
 package HorsC.Vue.Content;
 
+import Main.Modele.TextManager;
 import Serializable.HorsCombat.HCPersonnage;
 import Serializable.HorsCombat.HCSort;
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ public abstract class ChoixPersos extends Content {
 
 	protected void applyCaracs(HCPersonnage perso) {
 		caracValues[0].set(perso.nom);
-		caracValues[1].set(perso.nomClasse);
+		caracValues[1].bind(TextManager.getEntiteName(perso.idClasse));
 		caracValues[2].set(perso.niveauS + "");
 		caracValues[3].set(perso.caracMax.vitalite + "");
 		caracValues[4].set(perso.caracMax.tempsaction + "");
@@ -224,7 +225,7 @@ public abstract class ChoixPersos extends Content {
 		protected final HCSort sort;
 
 		public ButSort(HCSort sort) {
-			super(sort.nom);
+			textProperty().bind(TextManager.getSortName((int) sort.idClasseSort));
 			this.sort = sort;
 			setPrefSize(60, 60);
 			setOnMouseEntered((e) -> {
@@ -233,9 +234,9 @@ public abstract class ChoixPersos extends Content {
 		}
 
 		protected void hover() {
-			sortDescrip.set(sort.nom + "\n"
+			sortDescrip.set(TextManager.getSortName((int) sort.idClasseSort).get() + "\n"
 					+ "N." + sort.niveau.getNiveauActu() + " XP." + sort.niveau.getExperienceActu() + "\n"
-					+ sort.description
+					+ TextManager.getSortDesc((int) sort.idClasseSort).get()
 			);
 		}
 
@@ -249,10 +250,10 @@ public abstract class ChoixPersos extends Content {
 
 		@Override
 		protected void hover() {
-			sortDescrip.set(sort.nom + "\n"
+			sortDescrip.set(TextManager.getSortName((int) sort.idClasseSort).get() + "\n"
 					+ "N. " + sort.niveau.getNiveauActu() + " XP." + sort.niveau.getExperienceActu() + "\n"
 					+ "TA. " + sort.tempsAction + " CD. " + sort.cooldown + " F. " + sort.fatigue + "\n"
-					+ sort.description
+					+ TextManager.getSortDesc((int) sort.idClasseSort).get()
 			);
 		}
 	}

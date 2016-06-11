@@ -7,8 +7,10 @@ package InC.Modele.Donnees;
 
 import Main.Modele.Modele;
 import Serializable.InCombat.ChargementCombat;
+import Serializable.InCombat.donnee.InEntiteActive;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
@@ -17,39 +19,39 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class Combat {
 
-	public final ArrayList<Equipe> equipes;
-	public final HashMap<Long, EntitePassive> entites;
+	public final HashMap<Integer, Equipe> equipes;
+	public final TreeMap<Long, EntitePassive> entites;
 	public final SimpleIntegerProperty tourActu;
 	public final SimpleIntegerProperty tourGlobalActu;
 
 	public Equipe monEquipe;
 
 	public Combat(ChargementCombat pack) {
-		this.equipes = new ArrayList();
-		this.entites = new HashMap();
+		this.equipes = new HashMap();
+		this.entites = new TreeMap();
 		this.monEquipe = null;
 		pack.equipes.forEach((eq) -> {
 			Equipe equipe = new Equipe(eq);
-			equipes.add(equipe);
+			equipes.put(eq.numero, equipe);
 			eq.listInEntites.forEach((e) -> {
-				if (e.listSA != null) {
-					entites.put(e.id, new EntiteActive(e, equipe,
-							Modele.infosCompte.idjoueur == e.idJoueur));
+				if (e instanceof InEntiteActive) {
+					entites.put(e.id, new EntiteActive(((InEntiteActive) e), equipe, ((InEntiteActive) e).tempsDeplacement));
 				} else {
 					entites.put(e.id, new EntitePassive(e, equipe));
 				}
 				if (monEquipe == null && e.idJoueur == Modele.infosCompte.idjoueur) {
 					monEquipe = equipe;
-					System.out.println(equipe.numero);
+//					System.out.println(equipe.numero);
 				}
 			});
 		});
 		tourActu = new SimpleIntegerProperty(-1);
 		tourGlobalActu = new SimpleIntegerProperty(-1);
 	}
-	
+
 	public boolean dansMonEquipe(EntitePassive e) {
-		return e.equipe.equals(monEquipe);
+		return true;
+//		return e.equipe.equals(monEquipe);
 	}
 
 }

@@ -5,8 +5,8 @@
  */
 package InC.Vue.Map.Grille.EffetsMap.Effet;
 
-import Serializable.Position;
-import java.util.ArrayList;
+import InC.Controleur.InCControleur;
+import InC.Modele.Timer.ActionSort;
 import javafx.scene.Group;
 
 /**
@@ -15,8 +15,10 @@ import javafx.scene.Group;
  */
 public abstract class Effet extends Group {
 	
-	public abstract void lancerEffet(int duration, Position from, ArrayList<Position> to);
+	public abstract void lancerEffet(ActionSort as, InCControleur controleur);
 	
 	public abstract void stop();
+	
+	public abstract void interrupt();
 
 }

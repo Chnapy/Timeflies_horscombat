@@ -6,10 +6,10 @@
 package InC.Modele.Timer;
 
 import InC.Controleur.InCControleur;
-import InC.Modele.Donnees.SortActif;
 import InC.Vue.HUD.Module.PileBox;
-import Serializable.Position;
-import java.util.ArrayList;
+import static Main.Controleur.MainControleur.EXEC;
+import Serializable.InCombat.action.Action;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -20,10 +20,15 @@ import javafx.collections.ListChangeListener;
  */
 public class PileAction extends SimpleListProperty<ActionSort> {
 
+	private static int ID = -1;
+
+	private final InCControleur controleur;
 	private final TourTimer timer;
+	public long beginTime;
 
 	public PileAction(InCControleur controleur) {
 		super(FXCollections.observableArrayList());
+		this.controleur = controleur;
 		this.timer = controleur.timer;
 		addListener((ListChangeListener.Change<? extends ActionSort> change) -> {
 			while (change.next()) {
@@ -34,6 +39,10 @@ public class PileAction extends SimpleListProperty<ActionSort> {
 					});
 				} else if (change.wasRemoved()) {
 					change.getRemoved().forEach((as) -> {
+						try {
+							as.future.cancel(true);
+						} catch (NullPointerException e) {
+						}
 						controleur.getEcran().hud.pileA.removeSort(as.tempsLance);
 					});
 				}
@@ -41,18 +50,73 @@ public class PileAction extends SimpleListProperty<ActionSort> {
 		});
 	}
 
-	public void addSort(int tempsLance, SortActif sort, Position source, ArrayList<Position> dest) {
-//		System.out.println(tempsLance);
+	public void setBeginTime(long beginTime) {
+		this.beginTime = beginTime;
+	}
+
+	//Retourne true si le sort est accepté && premier à etre lancé
+	public boolean addSort(ActionSort as) {
+		boolean premier = true;
+
+//		System.out.println("-----------------");
+//		System.out.println("NS time: " + as.tempsLance.get() + " duree: " + as.duree.get());
 		if (!isEmpty()) {
 			ActionSort derniereAction = get(size() - 1);
+			System.out.println("OS time: " + derniereAction.tempsLance.get() + " duree: " + derniereAction.duree.get());
 			if (derniereAction.tempsLance.get()
-					+ derniereAction.sort.tempsAction.get() > tempsLance) {
-				tempsLance = derniereAction.tempsLance.get()
-						+ derniereAction.sort.tempsAction.get();
+					+ derniereAction.duree.get() >= as.tempsLance.get()) {
+				as.tempsLance.set(derniereAction.tempsLance.get()
+						+ derniereAction.duree.get());
+				premier = false;
+//				System.out.println("Premier: " + premier);
 			}
 		}
-//		System.out.println(tempsLance);
-		add(new ActionSort(tempsLance, sort, source, dest));
+//		System.out.println("-----------------");
+
+		boolean accepte = add(as);
+		if (accepte) {
+			as.onStart = () -> {
+				if (as.enCours) {
+					return;
+				}
+				as.enCours = true;
+				Platform.runLater(()
+						-> controleur.getEcran().maps.grille.effetsMap.lancerEffet(as));
+				try {
+					Thread.sleep(as.duree.get());
+					for (Action a : as.actions) {
+						controleur.action(a);
+					}
+					Platform.runLater(()
+							-> controleur.getEcran().maps.grille.effetsMap.stopEffet());
+				} catch (InterruptedException ex) {
+					System.out.println("SORT interrompu");
+					Platform.runLater(()
+							-> controleur.getEcran().maps.grille.effetsMap.interruptEffet());
+				}
+				as.enCours = false;
+				try {
+					ActionSort next = get(indexOf(as) + 1);
+					if (!next.enCours) {
+						next.future = EXEC.submit(next.onStart);
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+				}
+			};
+			if (premier) {
+				as.future = EXEC.submit(as.onStart);
+			}
+		}
+		return accepte;
+	}
+
+	@Override
+	public boolean add(ActionSort as) {
+		if (getById(as.id) != null) {
+			System.err.println("Ajout de l'ActionSort annulé : id déjà existant " + as.id);
+			return false;
+		}
+		return super.add(as);
 	}
 
 	public void removeSort(ActionSort action) {
@@ -74,6 +138,34 @@ public class PileAction extends SimpleListProperty<ActionSort> {
 			}
 		}
 		remove(action);
+	}
+
+//	public Position getLastPositionIfExist(long idLanceur) {
+//		ActionSort as;
+//		for (int i = size() - 1; i >= 0; i--) {
+//			as = get(i);
+//			for (Action a : as.actions) {
+//				if (a.idLanceur == idLanceur) {
+//					if (a instanceof Teleportation) {
+//						return ((Teleportation) a).posCible;
+//					}
+//				}
+//			}
+//		}
+//		return null;
+//	}
+	public ActionSort getById(int id) {
+		for (ActionSort as : get()) {
+			if (as.id == id) {
+				return as;
+			}
+		}
+		return null;
+	}
+
+	public static int getNewID() {
+		ID++;
+		return ID;
 	}
 
 }

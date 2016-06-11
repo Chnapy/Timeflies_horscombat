@@ -100,7 +100,7 @@ public class AStarPathFinder<T> implements PathFinder<T> {
 		// easy first check, if the destination is blocked, we can't get there
 
 		if (map.blocked(mover, tx, ty)) {
-			System.out.println(tx + " " + ty);
+//			System.out.println(tx + " " + ty);
 			return null;
 		}
 

@@ -5,14 +5,20 @@
  */
 package InC.Vue.HUD.Module.Sorts;
 
+import InC.Modele.Donnees.EntiteActive;
 import InC.Modele.Donnees.SortActif;
 import InC.Vue.Actionnable;
+import InC.Vue.HUD.JaugeCirculaire;
+import InC.Vue.HUD.JaugeCirculaire.JaugeCirculaireStack;
 import InC.Vue.HUD.Module.Bulles.BulleSA;
+import static InC.Vue.StyleClass.CARAC_CLASS;
 import Main.Vue.DataVue;
+import Serializable.InCombat.TypeCarac;
+import static Serializable.InCombat.TypeCarac.*;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,63 +28,81 @@ import javafx.scene.layout.BorderPane;
  * ButSortActif.java
  *
  */
-public class ButSortActif extends ToggleButton implements Actionnable<ButSortActif> {
+public class ButSortActif extends BorderPane implements Actionnable<ButSortActif> {
+
+	private static final double JC_WIDTH = 16;
+	private static final double JC_MARGIN = JC_WIDTH / 2;
 
 	private final ImageView lFond;
-	private final Label lTempsA;
-	private final Label lCooldown;
-	private final Label lFatigue;
-	private final Label lNiveau;
+	public final ToggleButton tButton;
+	private final JaugeCirculaire lTempsA;
+	private final JaugeCirculaire lCooldown;
+	private final JaugeCirculaire lFatigue;
+	private final JaugeCirculaire lNiveau;
 
-	public ButSortActif(SortActif sa) {
-		this(DataVue.getSortIcone(sa.idClasse), sa.tempsAction,
+	public ButSortActif(EntiteActive ea, SortActif sa) {
+		this(ea, DataVue.getSortIcone(sa.idClasse), sa.tempsAction.first,
 				sa.cooldown.first, sa.cooldown.second, sa.fatigue, sa.niveau);
 
-		setTooltip(new BulleSA(sa));
+		tButton.setTooltip(new BulleSA(sa));
 	}
 
-	public ButSortActif(Image fond, IntegerProperty tempsA, IntegerProperty cooldownActu, IntegerProperty cooldownTotal, IntegerProperty fatigue, int niveau) {
+	public ButSortActif(EntiteActive ea, Image fond, IntegerProperty tempsA, IntegerProperty cooldownActu, IntegerProperty cooldownTotal, IntegerProperty fatigue, int niveau) {
 		init();
 		getStyleClass().add("sortBut");
-		setPadding(Insets.EMPTY);
 
-		BorderPane apane = new BorderPane();
-		getChildren().add(apane);
+		this.tButton = new ToggleButton();
+		tButton.setPadding(Insets.EMPTY);
 
 		this.lFond = new ImageView(fond);
-		this.lTempsA = new Label();
-		this.lCooldown = new Label();
-		this.lFatigue = new Label();
-		this.lNiveau = new Label(niveau + "");
+		this.lTempsA = new JaugeCirculaireStack(JaugeCirculaire.TypeText.NONE, CARAC_CLASS.get(TEMPSACTION));
+		this.lCooldown = new JaugeCirculaireStack(JaugeCirculaire.TypeText.NONE, CARAC_CLASS.get(COOLDOWN));
+		this.lFatigue = new JaugeCirculaireStack(JaugeCirculaire.TypeText.NONE, CARAC_CLASS.get(FATIGUE));
+		this.lNiveau = new JaugeCirculaireStack(JaugeCirculaire.TypeText.SIMPLE, CARAC_CLASS.get(NIVEAU));
 
-		lTempsA.getStyleClass().add("tempsa");
-		lCooldown.getStyleClass().add("cooldown");
-		lFatigue.getStyleClass().add("fatigue");
-		lNiveau.getStyleClass().add("niveau");
+		lTempsA.bind(tempsA, ea.caracs.get(TypeCarac.TEMPSACTION).first);
+		lCooldown.bind(cooldownActu, cooldownTotal);
+		lFatigue.bind(fatigue, ea.caracs.get(TypeCarac.FATIGUE).second);
+		lNiveau.bind(new SimpleIntegerProperty(niveau));
 
-		lTempsA.textProperty().bind(tempsA.divide(1000d).asString());
-		lCooldown.textProperty().bind(cooldownActu.asString());
-		lFatigue.textProperty().bind(fatigue.asString());
+		lTempsA.setPrefWidth(JC_WIDTH);
+		lCooldown.setPrefWidth(JC_WIDTH);
+		lFatigue.setPrefWidth(JC_WIDTH);
+		lNiveau.setPrefWidth(JC_WIDTH);
+		
+		lTempsA.setMouseTransparent(true);
+		lCooldown.setMouseTransparent(true);
+		lFatigue.setMouseTransparent(true);
+		lNiveau.setMouseTransparent(true);
 
-		lFond.fitWidthProperty().bind(prefWidthProperty());
+		tButton.prefWidthProperty().bind(prefWidthProperty().subtract(JC_WIDTH));
+		lFond.fitWidthProperty().bind(tButton.prefWidthProperty());
 		lFond.setPreserveRatio(true);
-		setGraphic(apane);
+		tButton.setGraphic(lFond);
 
-		apane.getChildren().add(lFond);
+		setCenter(tButton);
 
-		apane.setTop(lTempsA);
+		setTop(lTempsA);
+		lTempsA.setMaxHeight(JC_WIDTH);
+		lTempsA.setPrefHeight(JC_WIDTH);
 		BorderPane.setAlignment(lTempsA, Pos.TOP_CENTER);
+		BorderPane.setMargin(lTempsA, new Insets(0, 0, -JC_MARGIN, 0));
 
-		apane.setLeft(lCooldown);
-		BorderPane.setAlignment(lCooldown, Pos.CENTER_LEFT);
+		setLeft(lCooldown);
+		lCooldown.setMaxWidth(JC_WIDTH);
+		lCooldown.setPrefWidth(JC_WIDTH);
+		BorderPane.setMargin(lCooldown, new Insets(24, -JC_MARGIN, 0, 0));
 
-		apane.setRight(lFatigue);
-		BorderPane.setAlignment(lFatigue, Pos.CENTER_RIGHT);
+		setRight(lFatigue);
+		lFatigue.setMaxWidth(JC_WIDTH);
+		lFatigue.setPrefWidth(JC_WIDTH);
+		BorderPane.setMargin(lFatigue, new Insets(24, 0, 0, -JC_MARGIN));
 
-		apane.setBottom(lNiveau);
+		setBottom(lNiveau);
+		lNiveau.setMaxWidth(JC_WIDTH);
+		lNiveau.setPrefWidth(JC_WIDTH);
 		BorderPane.setAlignment(lNiveau, Pos.BOTTOM_CENTER);
-
-		lFond.toBack();
+		BorderPane.setMargin(lNiveau, new Insets(-JC_MARGIN, 0, 0, 0));
 	}
 
 	@Override

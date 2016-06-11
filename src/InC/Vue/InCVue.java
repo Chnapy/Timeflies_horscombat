@@ -5,6 +5,7 @@
  */
 package InC.Vue;
 
+import InC.Modele.Camera.Camera;
 import InC.Vue.HUD.CompteurDebutCombat;
 import InC.Vue.HUD.HUD;
 import InC.Vue.Map.AllMap;
@@ -22,6 +23,7 @@ public class InCVue extends Ecran<StackPane> {
 	public final AllMap maps;
 	public final HUD hud;
 	public final CompteurDebutCombat compteur;
+	public final Camera camera;
 
 	public InCVue() {
 		super(new StackPane(), 1000, 600, Color.ANTIQUEWHITE);
@@ -30,6 +32,7 @@ public class InCVue extends Ecran<StackPane> {
 		hud = new HUD(maps.minimap);
 		compteur = new CompteurDebutCombat();
 		root.getChildren().addAll(maps.grille, hud, compteur);
+		camera = new Camera(maps.grille);
 		turnOffPickOnBoundsForAll();
 	}
 	

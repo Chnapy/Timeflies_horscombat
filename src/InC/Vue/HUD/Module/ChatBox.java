@@ -15,6 +15,7 @@ public class ChatBox extends Pane {
 
 	public ChatBox() {
 		setId("chat");
+		getStyleClass().add("module");
 	}
 
 }

@@ -17,6 +17,8 @@ public enum TypeCarac {
 	TEMPSSUP,
 	VITESSE,
 	FATIGUE,
-	INITIATIVE;
+	INITIATIVE,
+	NIVEAU,
+	COOLDOWN;
 
 }

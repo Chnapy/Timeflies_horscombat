@@ -10,9 +10,10 @@ import Main.Vue.Ecran;
 /**
  * Controleur.java
  * 
- * @param <E>
+ * @param <E> type de vue
+ * @param <P> type de paquet reseau
  */
-public abstract class Controleur<E extends Ecran> {
+public abstract class Controleur<E extends Ecran, P> {
 	
 	protected final E ecran;
 	
@@ -22,7 +23,7 @@ public abstract class Controleur<E extends Ecran> {
 	
 	public abstract void start();
 	
-	public abstract void packetRecu(Object pack);
+	public abstract void packetRecu(P pack);
 
 	public E getEcran() {
 		return ecran;

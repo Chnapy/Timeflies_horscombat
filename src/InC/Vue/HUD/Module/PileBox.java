@@ -7,17 +7,19 @@ package InC.Vue.HUD.Module;
 
 import InC.Modele.Timer.ActionSort;
 import InC.Modele.ValeurCarac;
+import InC.Vue.HUD.JaugeCirculaire;
+import InC.Vue.HUD.JaugeCirculaire.TypeText;
 import Main.Vue.DataVue;
 import java.util.HashMap;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -25,7 +27,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -44,15 +45,16 @@ public class PileBox extends VBox {
 	private final Label lTemps;
 
 	private final ProgressBar pBar;
-	private final ProgressIndicator pInd;
+	private final JaugeCirculaire pInd;
 
 	private IntegerProperty tempsTotal;
 	private IntegerProperty tempsActu;
+	private IntegerProperty tempsSup;
 	private final HashMap<IntegerProperty, Action> actions;
-	private int idAction;
 
 	public PileBox() {
 		setId("pileA");
+		getStyleClass().add("module");
 		setPadding(new Insets(PADDING));
 
 		top = new HBox();
@@ -77,20 +79,13 @@ public class PileBox extends VBox {
 
 		tempsTotal = new SimpleIntegerProperty(0);
 		tempsActu = new SimpleIntegerProperty(0);
+		tempsSup = new SimpleIntegerProperty(0);
 
 		lTemps = new Label();
-		StringBinding lTempsBind = new StringBinding() {
-			{
-				super.bind(tempsActu, tempsTotal);
-			}
-
-			@Override
-			protected String computeValue() {
-				return Math.floor(tempsActu.doubleValue() / 100) / 10
-						+ " / " + Math.floor(tempsTotal.doubleValue() / 100) / 10;
-			}
-		};
-		lTemps.textProperty().bind(lTempsBind);
+		lTemps.textProperty().bind(Bindings.concat(
+				tempsActu.divide(100).divide(10d), "/", tempsTotal.divide(100).divide(10d),
+				" (+", tempsSup.divide(100).divide(10d), ")"
+		));
 		middle.getChildren().add(lTemps);
 
 		DoubleBinding pIndBind = new DoubleBinding() {
@@ -104,39 +99,34 @@ public class PileBox extends VBox {
 				return tempsActu.doubleValue() % 1000 / 1000;
 			}
 		};
-		pInd = new ProgressIndicator(0);
-		pInd.progressProperty().bind(pIndBind);
-		pInd.widthProperty().addListener((obs, d, d1) -> {
-			if (d.doubleValue() > 0) {
-				pInd.setClip(new Rectangle(d1.doubleValue(), d1.doubleValue()));
-			}
-		});
+		pInd = new JaugeCirculaire(TypeText.NONE);
+		pInd.pInd.progressProperty().bind(pIndBind);
 		bottom.getChildren().add(pInd);
 		AnchorPane.setRightAnchor(pInd, SPACE - 10);
 		AnchorPane.setTopAnchor(pInd, SPACE);
 
 		actions = new HashMap();
-		idAction = 0;
 
 	}
 
 	public Action addSort(ActionSort as) {
-		IntegerProperty momentLancer = as.tempsLance, duree = as.sort.tempsAction;
+		IntegerProperty momentLancer = as.tempsLance, duree = as.duree;
 
 		DoubleBinding pourcentDebut = momentLancer.multiply(1d).divide(tempsTotal);
 		DoubleBinding pourcentFin = momentLancer.multiply(1d).add(duree).divide(tempsTotal);
 
-		Action a = new Action(DataVue.getSortIcone(as.sort.idClasse), idAction);
-		idAction++;
+		Action a = new Action(DataVue.getSortIcone(as.sort.idClasse), as.sort.idClasse);
 		actions.put(momentLancer, a);
 
-		onMiddle.getChildren().add(a.rect);
-		a.rect.widthProperty().bind(pBar.widthProperty()
-				.multiply(pourcentFin.subtract(pourcentDebut)));
-		a.rect.translateXProperty().bind(pBar.widthProperty().multiply(pourcentDebut));
+		Platform.runLater(() -> {
+			onMiddle.getChildren().add(a.rect);
+			a.rect.widthProperty().bind(pBar.widthProperty()
+					.multiply(pourcentFin.subtract(pourcentDebut)));
+			a.rect.translateXProperty().bind(pBar.widthProperty().multiply(pourcentDebut));
 
-		bottom.getChildren().add(a);
-		a.translateXProperty().bind(pBar.widthProperty().multiply(pourcentDebut));
+			bottom.getChildren().add(a);
+			a.translateXProperty().bind(pBar.widthProperty().multiply(pourcentDebut));
+		});
 
 		return a;
 	}
@@ -147,10 +137,11 @@ public class PileBox extends VBox {
 		bottom.getChildren().remove(rm);
 	}
 
-	public final void lancer(ValeurCarac<IntegerProperty> ta) {
+	public final void lancer(ValeurCarac<IntegerProperty> ta, ValeurCarac<IntegerProperty> ts) {
 		pBar.progressProperty().bind(ta.first.divide(ta.second.multiply(1d)));
 		tempsActu.bind(ta.first);
 		tempsTotal.bind(ta.second);
+		tempsSup.bind(ts.first);
 	}
 
 	public static class Action extends Button {
@@ -169,7 +160,7 @@ public class PileBox extends VBox {
 
 		public final Rectangle rect;
 
-		public Action(Image image, int idAction) {
+		public Action(Image image, int idClasseSort) {
 			ImageView img = new ImageView(image);
 			img.setFitWidth(ACTION_WIDTH);
 			img.setPreserveRatio(true);
@@ -177,7 +168,8 @@ public class PileBox extends VBox {
 			setGraphic(img);
 			setPadding(Insets.EMPTY);
 			rect = new Rectangle(0, MIDDLE_HEIGHT);
-			rect.setFill(Color.valueOf(ACTION_COLOR_CODE[idAction % ACTION_COLOR_CODE.length] + "CC"));
+			rect.setStyle("-fx-fill: -fx-sort" + idClasseSort);
+			rect.setOpacity(0.4);
 		}
 	}
 

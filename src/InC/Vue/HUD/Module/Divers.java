@@ -15,6 +15,7 @@ public class Divers extends Pane {
 	
 	public Divers() {
 		setId("divers");
+		getStyleClass().add("module");
 	}
 
 }

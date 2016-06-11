@@ -124,12 +124,12 @@ public class Map implements TileBasedMap<Position> {
 	}
 
 	private boolean positionHaveEntite(int x, int y) {
-		return getEntiteBindingFromPos(x, y) != null;
+		return getEntiteBindingFromPosReference(x, y) != null;
 	}
 
-	private EntiteBinding getEntiteBindingFromPos(int x, int y) {
+	private EntiteBinding getEntiteBindingFromPosReference(int x, int y) {
 		for (EntiteBinding eb : listEntitesBinding) {
-			if (eb.position.get().x == x && eb.position.get().y == y) {
+			if (eb.positionReference.get().x == x && eb.positionReference.get().y == y) {
 				return eb;
 			}
 		}
@@ -139,7 +139,6 @@ public class Map implements TileBasedMap<Position> {
 	@Override
 	public Position getPathPoint(int x, int y) {
 		return new Position(x, y);
-//		return tuiles[x][y];
 	}
 
 	public Tuile getTileByPos(int x, int y) {
@@ -192,13 +191,14 @@ public class Map implements TileBasedMap<Position> {
 				}
 			}
 		}
+//		System.out.println("OU" + output.size());
 		return output;
 	}
 
 	public void showZoneAction(ArrayList<Position> points) {
 		points.forEach((p) -> {
 			tuiles[p.x][p.y].getBinding().state.set(TuileState.ZONE_ACTION);
-			EntiteBinding eb = getEntiteBindingFromPos(p.x, p.y);
+			EntiteBinding eb = getEntiteBindingFromPosReference(p.x, p.y);
 			if (eb != null) {
 				eb.estCible.set(true);
 			}

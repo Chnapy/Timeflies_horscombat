@@ -5,13 +5,15 @@
  */
 package InC.Vue.Map.Grille.MicroHUD;
 
+import InC.Modele.Donnees.EntiteActive;
 import InC.Modele.Donnees.EntitePassive;
 import InC.Modele.Donnees.Envoutement;
 import InC.Modele.Donnees.SortPassif;
 import InC.Vue.HUD.Jauge;
-import InC.Vue.HUD.Module.Sorts.ButEnvoutement;
 import InC.Vue.HUD.Module.Sorts.ButSortPassif;
 import Serializable.InCombat.TypeCarac;
+import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.GridPane;
@@ -34,8 +36,28 @@ public class EntiteHUD extends GridPane {
 	public EntiteHUD(EntitePassive ep) {
 		this();
 		vie.bind(ep.caracs.get(TypeCarac.VITALITE));
-		ta.bind(ep.caracs.get(TypeCarac.TEMPSACTION));
-		ep.sortsP.forEach((sp) -> {
+		if (ep instanceof EntiteActive) {
+			ta.bind(ep.caracs.get(TypeCarac.TEMPSACTION));
+		} else {
+			ta.setVisible(false);
+			ta.setManaged(false);
+		}
+		ep.sortsP.addListener((MapChangeListener.Change<? extends Integer, ? extends SortPassif> change) -> {
+			if (change.wasAdded()) {
+				SortPassif sp = change.getValueAdded();
+				addSortP(sp);
+			}
+		});
+		ep.envoutements.addListener((ListChangeListener.Change<? extends Envoutement> change) -> {
+			while (change.next()) {
+				if (change.wasAdded()) {
+					change.getAddedSubList().forEach((env) -> {
+						addEnvoutement(env);
+					});
+				}
+			}
+		});
+		ep.sortsP.values().forEach((sp) -> {
 			addSortP(sp);
 		});
 		ep.envoutements.forEach((e) -> {
@@ -67,11 +89,11 @@ public class EntiteHUD extends GridPane {
 		top.setPadding(PADDING_TOP);
 		left.setPadding(PADDING_COTE);
 		right.setPadding(PADDING_COTE);
-		
+
 		top.setSpacing(SPACE_TOP);
 		left.setSpacing(SPACE_COTE);
 		right.setSpacing(SPACE_COTE);
-		
+
 		top.setMaxHeight(JAUGE_HEIGHT);
 		left.setMaxWidth(BOUTON_WIDTH);
 		right.setMaxWidth(BOUTON_WIDTH);
@@ -85,13 +107,12 @@ public class EntiteHUD extends GridPane {
 		ButSortPassif bsp = new ButSortPassif(sp);
 		left.getChildren().add(bsp);
 		bsp.setFitWidth(BOUTON_WIDTH);
-
 	}
 
 	public void addEnvoutement(Envoutement env) {
-		ButEnvoutement be = new ButEnvoutement(env);
+		ButSortPassif be = new ButSortPassif(env);
 		right.getChildren().add(be);
-		be.setPrefHeight(BOUTON_WIDTH);
+		be.setFitWidth(BOUTON_WIDTH);
 	}
 
 }

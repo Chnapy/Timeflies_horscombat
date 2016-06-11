@@ -19,7 +19,8 @@ import javafx.scene.layout.Priority;
 public class BulleSP extends Bulle {
 
 	public BulleSP(SortPassif sp) {
-		Label titre = new Label(sp.nom);
+		Label titre = new Label();
+		titre.textProperty().bind(sp.nom);
 		titre.getStyleClass().add("bulle-titre");
 		
 		CercleLabel niveau = new CercleLabel(sp.niveau + "");
@@ -30,7 +31,8 @@ public class BulleSP extends Bulle {
 		top.setSpacing(SPACE);
 		HBox.setHgrow(niveau, Priority.ALWAYS);
 		
-		Label desc = new Label(sp.description);
+		Label desc = new Label();
+		desc.textProperty().bind(sp.description);
 		desc.getStyleClass().add("desc");
 		vbox.getChildren().addAll(top, desc);
 	}

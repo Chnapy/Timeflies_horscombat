@@ -7,11 +7,8 @@ package InC.Controleur.Listener;
 
 import InC.Controleur.InCControleur;
 import InC.Modele.ActionState;
-import InC.Modele.Binding.SortBinding;
-import InC.Modele.Donnees.EntiteActive;
 import InC.Modele.Donnees.SortActif;
-import InC.Modele.Map.Map;
-import javafx.beans.property.ObjectProperty;
+import Serializable.Position;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -36,8 +33,8 @@ public class OnButSAaction implements EventHandler<ActionEvent> {
 			return;
 		}
 		controleur.monSortEnCours.setSortActu(sa);
-		controleur.map.showZonePortee(controleur.entiteEnCours.get().getBinding().position.get(),
-				sa.zonePortee.getZoneIntermediaire());
+		Position start = controleur.getPositionReference();
+		controleur.map.showZonePortee(start, sa.zonePortee.getZoneIntermediaire());
 	}
 
 }

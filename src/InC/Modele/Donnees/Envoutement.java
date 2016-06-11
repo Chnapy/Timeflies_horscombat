@@ -15,9 +15,8 @@ public class Envoutement extends SortPassif {
 
 	public final SimpleIntegerProperty nbrTours;
 
-	public Envoutement(int idClasse, String nom, String description,
-			int nbrTours) {
-		super(idClasse, nom, description, -1);
+	public Envoutement(int idClasse, int nbrTours) {
+		super(idClasse, -1);
 		this.nbrTours = new SimpleIntegerProperty(nbrTours);
 	}
 

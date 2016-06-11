@@ -22,10 +22,12 @@ public class CompteurDebutCombat extends BorderPane {
 	public final JaugeCirculaire jc;
 	
 	public CompteurDebutCombat() {
-		setMaxSize(JC_WIDTH, JC_WIDTH);
+		setId("compteur");
+		
 		jc = new JaugeCirculaire(JaugeCirculaire.TypeText.SIMPLE);
 		jc.label.setText("10");
 		jc.label.setFont(Font.font(70));
+		jc.setMaxSize(JC_WIDTH, JC_WIDTH);
 		StackPane.setAlignment(jc.label, Pos.CENTER);
 		StackPane.setMargin(jc.label, new Insets(0, 0, 15, 0));
 		

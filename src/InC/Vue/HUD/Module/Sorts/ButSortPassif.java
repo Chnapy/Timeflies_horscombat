@@ -8,6 +8,7 @@ package InC.Vue.HUD.Module.Sorts;
 import InC.Modele.Donnees.SortPassif;
 import InC.Vue.HUD.Module.Bulles.BulleSP;
 import Main.Vue.DataVue;
+import javafx.application.Platform;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

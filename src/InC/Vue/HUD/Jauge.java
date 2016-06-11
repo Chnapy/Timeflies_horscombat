@@ -80,26 +80,4 @@ public class Jauge extends StackPane {
 			foreground.heightProperty().bind(ov.multiply(background.heightProperty()));
 		}
 	}
-
-//	public static class VJauge extends Jauge {
-//
-//		public VJauge(DoubleProperty heightP) {
-////			translateYProperty().bind(heightP.multiply(-1));
-////			translateXProperty().bind(widthProperty().subtract(heightProperty()).divide(2));
-////			
-////			setRotate(-90);
-//		}
-//
-////		@Override
-////		public void setWidth(double d1) {
-////			System.out.println(d1);
-////			super.setHeight(d1); //TODO
-////		}
-////
-////		@Override
-////		public void setHeight(double d1) {
-////			System.out.println(d1);
-////			super.setWidth(d1); //TODO
-////		}
-//	}
 }

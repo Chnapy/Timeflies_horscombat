@@ -18,9 +18,9 @@ public class InEquipe implements Serializable {
 	
 	public final int numero;
 	public final String colorCode;
-	public final ArrayList<InEntite> listInEntites;
+	public final ArrayList<InEntitePassive> listInEntites;
 
-	public InEquipe(int numero, String colorCode, ArrayList<InEntite> listInEntites) {
+	public InEquipe(int numero, String colorCode, ArrayList<InEntitePassive> listInEntites) {
 		this.numero = numero;
 		this.colorCode = colorCode;
 		this.listInEntites = listInEntites;

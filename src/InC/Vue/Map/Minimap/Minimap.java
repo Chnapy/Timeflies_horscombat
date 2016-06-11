@@ -15,11 +15,10 @@ import InC.Vue.Map.Grille.StackMap;
  */
 public class Minimap extends StackMap<Minitilemap, Minientitemap, Minituile, Minientite> {
 
-	public static double MINITILE_WIDTH = 8;
-
 	public Minimap() {
 		super(new Minitilemap(), new Minientitemap());
 		setId("minimap");
+		getStyleClass().add("module");
 		tmap.prefWidthProperty().bind(widthProperty());
 		emap.prefWidthProperty().bind(widthProperty());
 	}
@@ -33,8 +32,7 @@ public class Minimap extends StackMap<Minitilemap, Minientitemap, Minituile, Min
 
 	@Override
 	public Minientite ajoutEntite(EntitePassive e) {
-		Minientite me = new Minientite(e);
-		me.setRadius(MINITILE_WIDTH / 2);
+		Minientite me = new Minientite(e, e.getBinding().position.get());
 		emap.ajoutNode(me, e.getBinding().position.get().x, e.getBinding().position.get().y);
 		return me;
 	}

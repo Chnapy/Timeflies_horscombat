@@ -56,9 +56,10 @@ public class OnTileHover implements ChangeListener<Boolean> {
 			controleur.map.clearDeplacement();
 			return;
 		}
+		Position start = controleur.getPositionReference();
 		controleur.pathFinder.findPath(controleur.entiteEnCours.get(),
-				controleur.entiteEnCours.get().getBinding().position.get().x,
-				controleur.entiteEnCours.get().getBinding().position.get().y,
+				start.x,
+				start.y,
 				tilePos.x, tilePos.y, controleur.path);
 		if (controleur.path.isEmpty()) {
 			return;

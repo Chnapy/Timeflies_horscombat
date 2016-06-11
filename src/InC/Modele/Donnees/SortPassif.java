@@ -5,7 +5,9 @@
  */
 package InC.Modele.Donnees;
 
+import Main.Modele.TextManager;
 import Serializable.InCombat.donnee.InSortPassif;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * SortPassif.java
@@ -14,18 +16,18 @@ import Serializable.InCombat.donnee.InSortPassif;
 public class SortPassif {
 	
 	public final int idClasse;
-	public final String nom;
-	public final String description;
+	public final SimpleStringProperty nom;
+	public final SimpleStringProperty description;
 	public final int niveau;
 
 	public SortPassif(InSortPassif sp) {
-		this(sp.idClasseSort, sp.nom, sp.description, sp.niveau);
+		this(sp.idClasseSort, sp.niveau);
 	}
 
-	public SortPassif(int idClasse, String nom, String description, int niveau) {
+	public SortPassif(int idClasse, int niveau) {
 		this.idClasse = idClasse;
-		this.nom = nom;
-		this.description = description;
+		this.nom = TextManager.getSortName(idClasse);
+		this.description = TextManager.getSortName(idClasse);
 		this.niveau = niveau;
 	}
 

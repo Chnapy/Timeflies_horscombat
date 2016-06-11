@@ -5,11 +5,12 @@
  */
 package InC.Vue.Map.Grille.EffetsMap;
 
+import InC.Controleur.InCControleur;
+import InC.Modele.Timer.ActionSort;
 import InC.Vue.Map.Grille.EffetsMap.Effet.DefaultEffet;
+import InC.Vue.Map.Grille.EffetsMap.Effet.DeplacementEffet;
 import InC.Vue.Map.Grille.EffetsMap.Effet.Effet;
-import static Main.Controleur.MainControleur.EXEC;
-import Serializable.Position;
-import java.util.ArrayList;
+import Main.Modele.Data;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Pane;
 
@@ -19,9 +20,11 @@ import javafx.scene.layout.Pane;
  */
 public class EffetsMap extends Pane {
 
-	private Runnable wait;
-	private final SimpleObjectProperty<Effet> effetActu;
+	private InCControleur controleur;
 	private final DefaultEffet deffet;
+	private final DeplacementEffet deplacEffet;
+
+	private final SimpleObjectProperty<Effet> effetActu;
 
 	public EffetsMap() {
 		effetActu = new SimpleObjectProperty();
@@ -33,23 +36,23 @@ public class EffetsMap extends Pane {
 			}
 			getChildren().add(t1);
 		});
+
 		deffet = new DefaultEffet();
+		deplacEffet = new DeplacementEffet();
+	}
+	
+	public void setControleur(InCControleur controleur) {
+		this.controleur = controleur;
 	}
 
-	public void lancerEffet(int idClasse, int duration, Position from, ArrayList<Position> to) {
-		effetActu.set(getEffet(idClasse));
-		effetActu.get().lancerEffet(duration, from, to);
-		wait = () -> {
-			System.out.println("DEBUT : " + duration);
-			try {
-				Thread.sleep(duration);
-			} catch (InterruptedException ex) {
-			}
-			System.out.println("FIN");
-			effetActu.get().stop();
-			getChildren().remove(effetActu.get());
-		};
-		EXEC.submit(wait);
+	public void lancerEffet(ActionSort as) {
+		effetActu.set(getEffet(as.sort.idClasse));
+		effetActu.get().lancerEffet(as, controleur);
+//		System.err.println("PLAY");
+	}
+	
+	public void interruptEffet() {
+		effetActu.get().interrupt();
 	}
 
 	public void stopEffet() {
@@ -57,7 +60,12 @@ public class EffetsMap extends Pane {
 	}
 
 	private Effet getEffet(int idClasse) {
-		return deffet;
+		switch (idClasse) {
+			case Data.DEPLACEMENT_IDCLASSE:
+				return deplacEffet;
+			default:
+				return deffet;
+		}
 	}
 
 }

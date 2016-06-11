@@ -17,8 +17,8 @@ public class Teleportation extends Action {
 
 	public final Position posCible;
 
-	public Teleportation(long idCible, Position posCible) {
-		super(idCible);
+	public Teleportation(long idLanceur, long idCible, int idClasseSort, Position posCible) {
+		super(idLanceur, idCible, idClasseSort);
 		this.posCible = posCible;
 	}
 }

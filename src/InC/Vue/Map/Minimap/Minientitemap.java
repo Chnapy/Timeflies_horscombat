@@ -11,19 +11,20 @@ import javafx.scene.layout.Pane;
 
 /**
  * Minientitemap.java
- * 
+ *
  */
 public class Minientitemap extends Pane implements VueMap<Minientite, Minientitemap> {
 
-	private int width;
-	
+	private double width;
+
 	@Override
 	public void ajoutNode(Minientite tuile, int x, int y) {
-		tuile.radiusProperty().bind(prefWidthProperty().divide(width * 2));
+		tuile.prefWidthProperty().bind(prefWidthProperty().divide(width));
+		tuile.prefHeightProperty().bind(tuile.prefWidthProperty());
 		getChildren().add(tuile);
 		Platform.runLater(() -> {
-			tuile.setLayoutX(x * tuile.getRadius() * 2 + tuile.getRadius());
-			tuile.setLayoutY(y * tuile.getRadius() * 2 + tuile.getRadius());
+			tuile.setLayoutX(x * tuile.getWidth());
+			tuile.setLayoutY(y * tuile.getWidth());
 		});
 	}
 

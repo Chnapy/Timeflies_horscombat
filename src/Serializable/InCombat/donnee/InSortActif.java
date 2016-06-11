@@ -21,8 +21,8 @@ public class InSortActif extends InSort {
 	public final Zone zonePortee;
 	public final Zone zoneAction;
 
-	public InSortActif(int idClasseSort, String nom, String description, int niveau, int tempsAction, int cooldown, int fatigue, Zone zonePortee, Zone zoneAction) {
-		super(idClasseSort, nom, description, niveau);
+	public InSortActif(int idClasseSort, int niveau, int tempsAction, int cooldown, int fatigue, Zone zonePortee, Zone zoneAction) {
+		super(idClasseSort, niveau);
 		this.tempsAction = tempsAction;
 		this.cooldown = cooldown;
 		this.fatigue = fatigue;

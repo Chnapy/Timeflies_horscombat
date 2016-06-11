@@ -5,9 +5,11 @@
  */
 package InC.Vue.Map.Grille.EffetsMap.Effet;
 
+import InC.Controleur.InCControleur;
+import InC.Modele.Timer.ActionSort;
 import InC.Vue.Map.Grille.AbstractMap;
 import Serializable.Position;
-import java.util.ArrayList;
+import java.util.List;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -36,9 +38,13 @@ public class DefaultEffet extends Effet {
 	}
 
 	@Override
-	public void lancerEffet(int duration, Position from, ArrayList<Position> to) {
+	public void lancerEffet(ActionSort as, InCControleur controleur) {
 		pt.setDuration(new Duration(0));
-
+		
+		List<Position> to = as.dest;
+		Position from = as.source;
+		int duration = as.duree.get();
+		
 		to.forEach((p) -> {
 			TranslateTransition tt = new TranslateTransition(new Duration(duration));
 			tt.setFromX(AbstractMap.getRealTileX(from.x, from.y) + AbstractMap.TILE_WIDTH / 2);
@@ -52,14 +58,21 @@ public class DefaultEffet extends Effet {
 			getChildren().add(c);
 		});
 
+		setVisible(true);
 		st.playFromStart();
 	}
 	
 	@Override
 	public void stop() {
+		setVisible(false);
 		st.stop();
 		pat.getChildren().clear();
 		getChildren().clear();
+	}
+
+	@Override
+	public void interrupt() {
+		stop();
 	}
 
 }

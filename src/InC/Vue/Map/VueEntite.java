@@ -35,4 +35,10 @@ public interface VueEntite<N extends Node> extends VueItem<N> {
 
 	public void estCible(boolean estCible);
 
+	public default void changeAlive(boolean alive) {
+		alive(alive);
+	}
+
+	public void alive(boolean alive);
+
 }

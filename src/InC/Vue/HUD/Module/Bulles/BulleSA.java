@@ -22,10 +22,12 @@ public class BulleSA extends BulleSP {
 		super(sa);
 		CercleLabel ta = new CercleLabel(), cd = new CercleLabel(), fa = new CercleLabel();
 
-		ta.textProperty().bind(sa.tempsAction.divide(1000d).asString());
+		ta.textProperty().bind(Bindings.concat(sa.tempsAction.first.divide(100).divide(10d).asString(),
+				"/", sa.tempsAction.second.divide(100).divide(10d).asString()));
 		ta.getStyleClass().add("tempsa");
 
-		cd.textProperty().bind(Bindings.concat(sa.cooldown.first.asString(), "/", sa.cooldown.second.asString()));
+		cd.textProperty().bind(Bindings.concat(sa.cooldown.first.asString(),
+				"/", sa.cooldown.second.asString()));
 		cd.getStyleClass().add("cooldown");
 
 		fa.textProperty().bind(sa.fatigue.asString());
@@ -37,7 +39,7 @@ public class BulleSA extends BulleSP {
 		bottom.setAlignment(Pos.TOP_LEFT);
 		bottom.setHgap(SPACE);
 		bottom.setVgap(SPACE);
-		
+
 		vbox.getChildren().addAll(bottom);
 	}
 

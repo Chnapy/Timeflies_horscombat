@@ -15,9 +15,10 @@ import javafx.scene.layout.Pane;
  */
 public class Minitilemap extends Pane implements VueMap<Minituile, Minitilemap> {
 
-	private int width;
+	private double width;
 
 	public Minitilemap() {
+		getStyleClass().add("minitilemap");
 	}
 
 	@Override

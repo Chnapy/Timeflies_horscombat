@@ -31,11 +31,11 @@ public class HUD extends AnchorPane {
 
 	private static final double MARGIN = 5;
 
-	public static final double TIMELINE_PREFWIDTH = 300, TIMELINE_MAXWIDTH = 1000,
+	public static final double TIMELINE_PREFWIDTH = 420, TIMELINE_MAXWIDTH = 1000,
 			CHAT_WIDTH = 300, CHAT_HEIGHT = 300,
 			MINIMAP_WIDTH = 100, MINIMAP_HEIGHT = MINIMAP_WIDTH,
 			BARRE_SA_HEIGHT = 50, BARRE_SP_HEIGHT = 20, BARRE_E_HEIGHT = BARRE_SP_HEIGHT,
-			PILE_A_HEIGHT = 100, DIVERS_HEIGHT = 50, ENTITECOURS_HEIGHT = 200;
+			PILE_A_HEIGHT = 100, DIVERS_WIDTH = 100, DIVERS_HEIGHT = 50, ENTITECOURS_HEIGHT = 200;
 
 	public final ChatBox chat;
 	public final BarreSortsActifs barreSA;
@@ -65,7 +65,9 @@ public class HUD extends AnchorPane {
 
 		VBox barres = new VBox(barreE, barreSP, barreSA);
 		barres.setId("barres");
+		barres.getStyleClass().add("module");
 		barres.setAlignment(Pos.BOTTOM_CENTER);
+		barres.setFillWidth(false);
 
 		Pane spaceForTimeline = new Pane();
 
@@ -79,17 +81,16 @@ public class HUD extends AnchorPane {
 		AnchorPane.setRightAnchor(bottom, 0d);
 
 		this.minimap = minimap;
-		minimap.setPrefSize(MINIMAP_WIDTH, MINIMAP_HEIGHT);
+		minimap.setPrefWidth(MINIMAP_WIDTH);
 
 		pileA = new PileBox();
 		pileA.setPrefHeight(PILE_A_HEIGHT);
 
 		Pane spaceForTimeline2 = new Pane();
-		spaceForTimeline2.setPrefWidth(TIMELINE_PREFWIDTH);
 
 		GridPane top = new GridPane();
 		top.setHgap(MARGIN);
-		top.addRow(0, minimap, pileA, spaceForTimeline2);
+		top.addRow(0, new Pane(minimap), pileA, spaceForTimeline2);
 		GridPane.setHgrow(pileA, Priority.ALWAYS);
 		getChildren().add(top);
 		AnchorPane.setTopAnchor(top, 0d);
@@ -97,24 +98,28 @@ public class HUD extends AnchorPane {
 		AnchorPane.setRightAnchor(top, 0d);
 
 		divers = new Divers();
-		divers.setPrefSize(TIMELINE_PREFWIDTH, DIVERS_HEIGHT);
-		divers.setMaxWidth(TIMELINE_PREFWIDTH);
+		divers.setPrefSize(DIVERS_WIDTH, DIVERS_HEIGHT);
+		spaceForTimeline2.prefWidthProperty().bind(divers.widthProperty());
 
 		timeline = new Timeline();
-//		timeline.setMinWidth(TIMELINE_PREFWIDTH);
+		timeline.setPrefWidth(TIMELINE_PREFWIDTH);
 
 		entiteCours = new EntiteCours();
-		entiteCours.setPrefWidth(TIMELINE_PREFWIDTH);
 		spaceForTimeline.prefWidthProperty().bind(entiteCours.widthProperty());
+		AnchorPane pe = new AnchorPane(entiteCours);
+		entiteCours.setPrefWidth(TIMELINE_PREFWIDTH);
+		AnchorPane.setRightAnchor(entiteCours, 0d);
+		AnchorPane.setBottomAnchor(entiteCours, 0d);
 
 		GridPane right = new GridPane();
 		right.setAlignment(Pos.BOTTOM_RIGHT);
 		right.setVgap(MARGIN);
 		right.setHgap(MARGIN);
-		right.addColumn(0, divers, timeline, entiteCours);
+		right.addColumn(0, divers, timeline, pe);
+		GridPane.setFillWidth(divers, false);
 		GridPane.setVgrow(timeline, Priority.ALWAYS);
 		GridPane.setHalignment(divers, HPos.RIGHT);
-		GridPane.setHalignment(entiteCours, HPos.RIGHT);
+		GridPane.setHalignment(pe, HPos.RIGHT);
 		getChildren().add(right);
 		AnchorPane.setRightAnchor(right, 0d);
 		AnchorPane.setBottomAnchor(right, 0d);
@@ -133,12 +138,11 @@ public class HUD extends AnchorPane {
 //		pileA.addSort(DataVue.getSortIcone(1), 5000, 3000);
 //		pileA.addSort(DataVue.getSortIcone(2), 8500, 5000);
 //		pileA.addSort(DataVue.getSortIcone(3), 28000, 1000);
-
 //		ValeurCarac<IntegerProperty> vie = new ValeurCarac(new SimpleIntegerProperty(), new SimpleIntegerProperty());
 //		vie.first.set(40);
 //		vie.second.set(90);
-//		timeline.addRow(-1, -1, "FF0000", "Jojo", 18, vie, vie, vie, vie, vie, vie);
-//		timeline.addRow(0, -1, "FF0000", "Jojo", 18, vie, vie, vie, vie, vie, vie);
+//		timeline.addEntiteActive(-1, -1, "FF0000", "Jojo", 18, vie, vie, vie, vie, vie, vie);
+//		timeline.addEntiteActive(0, -1, "FF0000", "Jojo", 18, vie, vie, vie, vie, vie, vie);
 	}
 
 }

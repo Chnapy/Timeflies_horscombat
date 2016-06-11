@@ -10,6 +10,7 @@ import InC.Modele.Map.Tuile.TuileState;
 import Serializable.InCombat.Orientation;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
+import javafx.scene.CacheHint;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
@@ -19,6 +20,7 @@ import javafx.scene.shape.Shape;
 /**
  * VueTuile
  * Interface
+ *
  * @param <S>
  */
 public abstract class VueTuile<S extends Shape> extends Pane implements VueItem<VueTuile> {
@@ -28,11 +30,14 @@ public abstract class VueTuile<S extends Shape> extends Pane implements VueItem<
 	protected final Circle beginDep, endDep;
 	protected final Ellipse cibleSort;
 
-	public VueTuile(Tuile tuile, S poly, double begin_radius, double end_radius, 
+	public VueTuile(Tuile tuile, S poly, double begin_radius, double end_radius,
 			double cible_sort_radius) {
 		init();
 		getThis().getStyleClass().addAll("tuile", tuile.type.toString().toLowerCase());
 //		getThis().setOnMouseEntered((e) -> System.out.println(tuile.id));
+//		setCache(true);
+//		setCacheHint(CacheHint.SPEED);
+//		setCacheShape(true);
 
 		this.poly = poly;
 		poly.getStyleClass().add("polygon");
@@ -54,14 +59,14 @@ public abstract class VueTuile<S extends Shape> extends Pane implements VueItem<
 		deplacementLine.controlY1Property().bind(beginDep.centerYProperty());
 		deplacementLine.controlX2Property().bind(widthProperty().divide(2d));
 		deplacementLine.controlY2Property().bind(heightProperty().divide(2d));
-		
+
 		cibleSort = new Ellipse();
 		cibleSort.getStyleClass().addAll("cible_sort", "action");
 		cibleSort.centerXProperty().bind(widthProperty().divide(2d));
 		cibleSort.centerYProperty().bind(heightProperty().divide(2d));
 		cibleSort.radiusXProperty().bind(widthProperty().multiply(cible_sort_radius / 2));
 		cibleSort.radiusYProperty().bind(heightProperty().multiply(cible_sort_radius / 2));
-		
+
 		getChildren().addAll(poly, deplacementLine, beginDep, endDep/*, cibleSort*/);
 		setPickOnBounds(false);
 

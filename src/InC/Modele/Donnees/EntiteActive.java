@@ -6,8 +6,11 @@
 package InC.Modele.Donnees;
 
 import InC.Modele.Pathfinding.Mover;
-import Serializable.InCombat.donnee.InEntite;
-import java.util.ArrayList;
+import Serializable.InCombat.TypeCarac;
+import Serializable.InCombat.donnee.InEntiteActive;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 
 /**
  * EntiteActive.java
@@ -15,14 +18,18 @@ import java.util.ArrayList;
  */
 public class EntiteActive extends EntitePassive implements Mover {
 
-	public final boolean controlable;
-	public final ArrayList<SortActif> sortsA;
+	public final SimpleStringProperty nomDonne;
+	public final SimpleMapProperty<Integer, SortActif> sortsA;
+	public final SortActif deplacement;
+	public final int maxTempsAction;
 
-	public EntiteActive(InEntite ent, Equipe equipe, boolean controlable) {
+	public EntiteActive(InEntiteActive ent, Equipe equipe, int tempsDeplacement) {
 		super(ent, equipe);
-		this.sortsA = new ArrayList();
-		ent.listSA.forEach((sa) -> sortsA.add(new SortActif(sa)));
-		this.controlable = controlable;
+		this.nomDonne = new SimpleStringProperty(ent.nomDonne);
+		this.sortsA = new SimpleMapProperty(FXCollections.observableHashMap());
+		ent.listSA.forEach((sa) -> sortsA.putIfAbsent(sa.idClasseSort, new SortActif(sa)));
+		this.deplacement = new SortActif(-1, 0, tempsDeplacement, 0, 0, null, null);
+		this.maxTempsAction = ent.caracs.get(TypeCarac.TEMPSACTION).max;
 	}
 
 }

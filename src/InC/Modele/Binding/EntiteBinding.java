@@ -19,8 +19,11 @@ import javafx.beans.property.SimpleObjectProperty;
 public class EntiteBinding extends ActionnableBinding<VueEntite> {
 	
 	public final ObjectProperty<Position> position;
+	public final ObjectProperty<Position> positionReference;
 	public final ObjectProperty<Orientation> orientation;
+	public final ObjectProperty<Orientation> orientationReference;
 	public final SimpleBooleanProperty estCible;
+	public final SimpleBooleanProperty alive;
 
 	public EntiteBinding(Position initialPosition, Orientation initialOrientation) {
 		
@@ -31,6 +34,8 @@ public class EntiteBinding extends ActionnableBinding<VueEntite> {
 			});
 		});
 		
+		positionReference = new SimpleObjectProperty(initialPosition);
+		
 		orientation = new SimpleObjectProperty(initialOrientation);
 		orientation.addListener((ov, t, t1) -> {
 			actionnables.forEach((a) -> {
@@ -38,10 +43,19 @@ public class EntiteBinding extends ActionnableBinding<VueEntite> {
 			});
 		});
 		
-		estCible = new SimpleBooleanProperty();
+		orientationReference = new SimpleObjectProperty(initialOrientation);
+		
+		estCible = new SimpleBooleanProperty(false);
 		estCible.addListener((ov, t, t1) -> {
 			actionnables.forEach((a) -> {
 				a.changeEstCible(t1);
+			});
+		});
+		
+		alive = new SimpleBooleanProperty(true);
+		alive.addListener((ov, t, t1) -> {
+			actionnables.forEach((a) -> {
+				a.changeAlive(t1);
 			});
 		});
 	}

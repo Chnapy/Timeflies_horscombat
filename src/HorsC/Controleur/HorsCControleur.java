@@ -8,12 +8,12 @@ package HorsC.Controleur;
 import Main.Controleur.Controleur;
 import HorsC.Modele.HorsCReseau;
 import HorsC.Vue.HorsCVue;
-import Main.Controleur.MainControleur;
 import Main.Modele.Modele;
 import Serializable.HorsCombat.HCPersonnage;
 import Serializable.HorsCombat.GestionPersos;
 import Serializable.HorsCombat.GestionPersos.AllClassePerso;
 import Serializable.HorsCombat.GestionPersos.IdCreaPerso;
+import Serializable.HorsCombat.HorsCombat;
 import Serializable.HorsCombat.HorsCombat.TypeCombat;
 import Serializable.HorsCombat.Map.MapSerializable;
 import Serializable.HorsCombat.SalonCombat;
@@ -21,14 +21,13 @@ import Serializable.HorsCombat.SalonCombat.EstPret;
 import Serializable.HorsCombat.SalonCombat.NewJoueur;
 import Serializable.HorsCombat.SalonCombat.PartieTrouvee;
 import Serializable.HorsCombat.SalonCombat.RmJoueur;
-import Serializable.InCombat.ChargementCombat;
 import java.util.ArrayList;
 
 /**
  * HorsCControleur.java
  *
  */
-public class HorsCControleur extends Controleur<HorsCVue> {
+public class HorsCControleur extends Controleur<HorsCVue, HorsCombat> {
 	
 	private MapSerializable mapS;
 
@@ -127,14 +126,16 @@ public class HorsCControleur extends Controleur<HorsCVue> {
 	}
 
 	@Override
-	public void packetRecu(Object pack) {
+	public void packetRecu(HorsCombat pack) {
 		if (pack instanceof GestionPersos) {
 			gestionPersos((GestionPersos) pack);
 		} else if (pack instanceof SalonCombat) {
 			salonCombat((SalonCombat) pack);
-		} else if (pack instanceof ChargementCombat) {
-			MainControleur.lancementCombat((ChargementCombat) pack, mapS);
 		}
+	}
+
+	public MapSerializable getMapS() {
+		return mapS;
 	}
 
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE root>
+<root lang="fr" lang_full="Français (French)" version="0" is_primary="1">
+	<include id="0" filename="interface.xml"/>
+	<include id="1" filename="entites.xml"/>
+	<include id="2" filename="sorts.xml"/>
+</root>

@@ -16,7 +16,9 @@ import javafx.beans.property.IntegerProperty;
 public class TourTimer extends AnimationTimer {
 
 	private ValeurCarac<IntegerProperty> ta;
+	private ValeurCarac<IntegerProperty> ts;
 	private long firstTime;
+	private long newT;
 
 	public int getTempsParcouru() {
 		return ta.second.subtract(ta.first).intValue();
@@ -24,17 +26,23 @@ public class TourTimer extends AnimationTimer {
 
 	@Override
 	public void handle(long l) {
-		long newT = (l - firstTime) / 1000000;
+		newT = (l - firstTime) / 1000000;
 		if (newT < ta.second.get()) {
 			ta.first.set(ta.second.get() - (int) newT);
 		} else {
 			ta.first.set(0);
-			stop();
+			if (newT < ta.second.get() + ts.second.get()) {
+				ts.first.set(ts.second.get() + ta.second.get() - (int) newT);
+			} else {
+				ts.first.set(0);
+				stop();
+			}
 		}
 	}
 
-	public void start(ValeurCarac<IntegerProperty> ta) {
+	public void start(ValeurCarac<IntegerProperty> ta, ValeurCarac<IntegerProperty> ts) {
 		this.ta = ta;
+		this.ts = ts;
 		firstTime = System.nanoTime();
 		start();
 	}

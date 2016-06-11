@@ -12,11 +12,12 @@ import InC.Vue.Map.Grille.Entitemap.EntiteMap;
 import InC.Vue.Map.Grille.Entitemap.EntiteSprite;
 import InC.Vue.Map.Grille.MicroHUD.EntiteHUD;
 import InC.Vue.Map.Grille.MicroHUD.MicroHUDMap;
+import InC.Vue.Map.Grille.NotificationMap.NotificationMap;
 import InC.Vue.Map.Grille.Tilemap.TileMap;
 import InC.Vue.Map.Grille.Tilemap.TilePolygon;
-import Main.Vue.Vue;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 
 /**
@@ -25,49 +26,31 @@ import javafx.scene.layout.Region;
  */
 public class Grille extends StackMap<TileMap, EntiteMap, TilePolygon, EntiteSprite> {
 
-	private static final double MAX_SCROLL = 256, MIN_SCROLL = 64, INITIAL_SCALE = 1;
-
 	public final EffetsMap effetsMap;
 	private final MicroHUDMap mhudmap;
+	public final NotificationMap notifMap;
+
+	public final Node[] scalables;
+	public double scale;
 
 	public Grille() {
 		super(new TileMap(), new EntiteMap());
 		setId("grille");
 		setAlignment(Pos.CENTER_LEFT);
 		setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-		
+
 		effetsMap = new EffetsMap();
 		getChildren().add(effetsMap);
 
 		mhudmap = new MicroHUDMap();
 		getChildren().add(mhudmap);
 
-		setOnScroll((e) -> {
-			double s = tmap.getScaleX() + (double) e.getDeltaY() / 1000;
-			scale(s);
-		});
-		scale(INITIAL_SCALE);
-	}
+		notifMap = new NotificationMap();
+		getChildren().add(notifMap);
 
-	public final void scale(double s) {
-		if (AbstractMap.TILE_WIDTH * s > MAX_SCROLL) {
-			s = MAX_SCROLL / AbstractMap.TILE_WIDTH;
-		} else if (AbstractMap.TILE_WIDTH * s < MIN_SCROLL) {
-			s = MIN_SCROLL / AbstractMap.TILE_WIDTH;
-		}
-		tmap.setScaleX(s);
-		tmap.setScaleY(s);
-		emap.setScaleX(s);
-		emap.setScaleY(s);
-		effetsMap.setScaleX(s);
-		effetsMap.setScaleY(s);
-	}
-
-	public void initScale() {
-		Platform.runLater(() -> {
-			double s = Vue.PRIMARYSTAGE.getWidth() / tmap.getWidth();
-			scale(s);
-		});
+		scalables = new Node[]{
+			tmap, emap, effetsMap, notifMap
+		};
 	}
 
 	@Override
@@ -96,22 +79,27 @@ public class Grille extends StackMap<TileMap, EntiteMap, TilePolygon, EntiteSpri
 		);
 
 		emap.scaleXProperty().addListener((ov, t, t1) -> {
-			setMHUDlayoutX(ehud, es);
+			setMHUDtranslateX(ehud, es);
 		});
 
 		emap.scaleYProperty().addListener((ov, t, t1) -> {
-			setMHUDlayoutY(ehud, es);
+			setMHUDtranslateY(ehud, es);
+		});
+
+		es.translateXProperty().addListener((ov, t, t1) -> {
+			setMHUDtranslateX(ehud, es);
+			setMHUDtranslateY(ehud, es);
 		});
 
 		mhudmap.getChildren().add(ehud);
 		Platform.runLater(() -> {
-			setMHUDlayoutX(ehud, es);
-			setMHUDlayoutY(ehud, es);
+			setMHUDtranslateX(ehud, es);
+			setMHUDtranslateY(ehud, es);
 		});
 	}
 
-	private void setMHUDlayoutX(EntiteHUD ehud, EntiteSprite es) {
-		ehud.setLayoutX(
+	private void setMHUDtranslateX(EntiteHUD ehud, EntiteSprite es) {
+		ehud.setTranslateX(
 				es.localToScene(es.getBoundsInLocal()).getMinX()
 				- (localToScene(getBoundsInLocal()).getWidth() - getWidth()) / 2
 				- localToScene(getBoundsInLocal()).getMinX()
@@ -119,12 +107,16 @@ public class Grille extends StackMap<TileMap, EntiteMap, TilePolygon, EntiteSpri
 		);
 	}
 
-	private void setMHUDlayoutY(EntiteHUD ehud, EntiteSprite es) {
-		ehud.setLayoutY(
+	private void setMHUDtranslateY(EntiteHUD ehud, EntiteSprite es) {
+		ehud.setTranslateY(
 				es.localToScene(es.getBoundsInLocal()).getMinY()
 				- mhudmap.localToScene(mhudmap.getBoundsInLocal()).getMinY()
 				- ehud.top.getHeight()
 		);
+	}
+	
+	public TileMap getTileMap() {
+		return tmap;
 	}
 
 }

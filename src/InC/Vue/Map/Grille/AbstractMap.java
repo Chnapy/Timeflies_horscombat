@@ -9,6 +9,7 @@ import InC.Vue.Map.VueMap;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import InC.Vue.Map.VueItem;
+import Serializable.Position;
 
 /**
  * AbstractMap.java
@@ -31,6 +32,14 @@ public abstract class AbstractMap<T extends VueItem> extends AnchorPane implemen
 
 	public static double getRealTileY(int x, int y) {
 		return y * TILE_HEIGHT / 2 - x * TILE_HEIGHT / 2 + TILE_HEIGHT / 2 * (hLength + 1);
+	}
+
+	public static Position getRealTilePos(Position p) {
+		return getRealTilePos(p.x, p.y);
+	}
+
+	public static Position getRealTilePos(int x, int y) {
+		return new Position((int) getRealTileX(x, y), (int) getRealTileY(x, y));
 	}
 
 }

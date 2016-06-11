@@ -7,36 +7,166 @@
 	/*visibility: hidden;*/
 }
 
+#compteur {
+	-fx-background-color: #00000088;
+}
+
 #grille {
-	-fx-background-color: red;
+	-fx-background-color: darkgray;
 }
 
 #tilemap {
-	-fx-background-color: dimgrey;
+	-fx-background-color: white;
 }
 
 /*
  * Variables
  */
-* {
-	-fx-vitalite: red;
-	-fx-tempsa: goldenrod;
-	-fx-tempss: orange;
-	-fx-vitesse: lightgreen;
-	-fx-fatigue: brown;
-	-fx-initiative: cornflowerblue;
-	-fx-niveau: dimgrey;
-	-fx-cooldown: green;
-	-fx-desc: white;
-	-fx-tsimple: white;
-	-fx-tecran: #44FF44;
-	-fx-ttrou: black;
-	-fx-tobstacle: red;
-	-fx-deplacement: green;
-	-fx-zoneportee: #0000FF88;
-	-fx-zoneaction: #FF000088;
-	-fx-ciblesort-stroke: red;
+.root {
+	/*
+	 * Couleurs flat
+	 */
+	-fx-turquoise1: #1abc9c;
+	-fx-turquoise2: #16a085;
+	-fx-vert1: #2ecc71;
+	-fx-vert2: #27ae60;
+	-fx-bleu1: #3498db;
+	-fx-bleu2: #2980b9;
+	-fx-violet1: #9b59b6;
+	-fx-violet2: #8e44ad;
+	-fx-noir1: #34495e;
+	-fx-noir2: #2c3e50;
+	-fx-jaune1: #f1c40f;
+	-fx-jaune2: #f39c12;
+	-fx-orange1: #e67e22;
+	-fx-orange2: #d35400;
+	-fx-rouge1: #e74c3c;
+	-fx-rouge2: #c0392b;
+	-fx-blanc1: #ecf0f1;
+	-fx-blanc2: #bdc3c7;
+	-fx-gris1: #95a5a6;
+	-fx-gris2: #7f8c8d;
+
+	-fx-vitalite: -fx-rouge1;
+	-fx-tempsa1: -fx-jaune1;
+	-fx-tempsa2: -fx-jaune2;
+	-fx-tempss1: -fx-orange1;
+	-fx-vitesse1: -fx-vert1;
+	-fx-fatigue1: -fx-violet1;
+	-fx-initiative1: -fx-bleu1;
+	-fx-niveau1: -fx-gris1;
+	-fx-cooldown: -fx-noir1;
+	-fx-desc: -fx-blanc1;
+	-fx-tsimple: -fx-blanc1;
+	-fx-tecran: -fx-turquoise2;
+	-fx-ttrou: -fx-noir1;
+	-fx-tobstacle: -fx-rouge2;
+	-fx-deplacement: -fx-vert1;
+	-fx-zoneportee: -fx-bleu1;
+	-fx-zoneaction: -fx-rouge1;
+	-fx-envoutement: -fx-turquoise2;
+	-fx-sortpassif: -fx-turquoise1;
+	-fx-sortactif: -fx-bleu1;
+	-fx-mort: -fx-noir2;
+	-fx-entiteactive: -fx-jaune1;
+	-fx-entitepassive: -fx-bleu1;
+	-fx-invocation: -fx-violet1;
+
+	/*
+	 * Couleurs sorts
+	 */
+	-fx-sort-1: -fx-deplacement;
+	-fx-sort1: -fx-rouge1;
 }
+
+.jauge *, .tuile .polygon {
+	-fx-smooth: false;
+}
+
+.jauge-bg {
+	-fx-fill: -fx-blanc1;
+	-fx-stroke: -fx-blanc1;
+}
+
+.jauge-fg {
+	-fx-fill: -fx-blanc2;
+	-fx-stroke: -fx-blanc2;
+}
+
+.jauge_circu_stack .label {
+	-fx-text-fill: white;
+}
+
+.progress-bar, .progress-indicator > .determinate-indicator > .indicator {
+    -fx-background-color:-fx-blanc1;
+	-fx-border-color: -fx-blanc2;
+}
+
+.progress-indicator .determinate-indicator > .progress {
+	-fx-background-color: -fx-blanc2;
+}
+
+.progress-indicator > .determinate-indicator > .tick {
+	-fx-shape: null;
+	-fx-background-color: transparent;
+}
+
+.progress-bar .bar { 
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+	-fx-background-radius: 0;
+	-fx-background-color: -fx-blanc2;
+}
+
+.progress-indicator > .determinate-indicator > .indicator {
+    -fx-background-insets: 0;
+    -fx-padding: 1px;
+}
+
+.progress-bar > .track {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+	-fx-background-radius: 0;
+}
+
+.progress-bar:indeterminate > .bar, .progress-bar > .track {
+    -fx-background-color: transparent;
+}
+
+.progress-indicator.notext .percentage {
+	-fx-fill: null;
+}
+
+/*
+ * Modules backgrounds
+ */
+
+#minimap, #pileA, #divers, #entiteCours, #barreSA, #chat, .rowentite.open {
+	-fx-background-color: -fx-blanc1;
+	-fx-border-color: -fx-blanc2;
+}
+
+#minimap {
+	/*-fx-padding: 1px;*/
+}
+
+#chat {
+	-fx-opacity: 0.5;
+}
+
+#barreSA {
+	-fx-padding: 5;
+	-fx-hgap: 5;
+	-fx-vgap: 5;
+}
+
+#entiteCours {
+	-fx-padding: 5;
+}
+
+/*
+ * Tuiles
+ */
 
 .tuile .polygon {
 	-fx-opacity: 0.75;
@@ -60,11 +190,10 @@
 
 .tuile.hover .polygon {
 	-fx-opacity: 1;
-	-fx-effect: dropshadow(gaussian, white, 10, 0, 0, 0);
+	-fx-effect: dropshadow(gaussian, white, 10, 0.5, 0, 0);
 }
 
 .tuile.deplacement .polygon {
-	/*-fx-fill: green;*/
 	-fx-opacity: 1;
 }
 
@@ -98,13 +227,17 @@
 }
 
 .tuile .end {
-	-fx-fill: -fx-deplacement;
+	-fx-fill: white;
 }
 
 .tuile .cible_sort {
 	-fx-fill: -fx-ciblesort;
 	-fx-stroke-width: 2;
 	visibility: hidden;
+}
+
+.fleche_orient {
+	-fx-fill: -fx-noir2;
 }
 
 .cercle-label {
@@ -131,16 +264,203 @@
     -fx-padding: 0;
 }
 
-.jauge-bg {
-	-fx-fill: white;
+.cooldown.label {
+	/*-fx-text-fill: -fx-cooldown;*/
 }
 
-.jauge-fg {
-	-fx-fill: blue;
+.cooldown .determinate-indicator > .progress, .cooldown .jauge-fg, .cercle-label.cooldown, .notification.cooldown {
+    -fx-background-color: -fx-cooldown;
+	-fx-fill: -fx-cooldown;
+}
+
+.cooldown .determinate-indicator .indicator {
+	-fx-border-color: -fx-cooldown;
+}
+
+.bulle .cooldown {
+	-fx-background-color: -fx-cooldown;
+}
+
+.niveau.label {
+	/*-fx-text-fill: -fx-niveau1;*/
+}
+
+.niveau .determinate-indicator > .progress, .niveau .jauge-fg, .cercle-label.niveau, .notification.niveau {
+    -fx-background-color: -fx-niveau1;
+	-fx-fill: -fx-niveau1;
+}
+
+.niveau .determinate-indicator .indicator {
+	-fx-border-color: -fx-niveau1;
+}
+
+.bulle .niveau {
+	-fx-background-color: -fx-niveau1;
+}
+
+.vitalite.label {
+	/*-fx-text-fill: -fx-vitalite;*/
+}
+
+.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg, .cercle-label.vitalite, .notification.vitalite {
+    -fx-background-color: -fx-vitalite;
+	-fx-fill: -fx-vitalite;
+}
+
+.vitalite .determinate-indicator .indicator {
+	-fx-border-color: -fx-vitalite;
+}
+
+.vitalite .jauge-bg, .vitalite .jauge-fg {
+	-fx-stroke: -fx-vitalite;
+}
+
+.bulle .vitalite {
+	-fx-background-color: -fx-vitalite;
+}
+
+.tempsa.label {
+	/*-fx-text-fill: -fx-tempsa1;*/
+}
+
+.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg, .cercle-label.tempsa, .notification.tempsa {
+    -fx-background-color: -fx-tempsa1;
+	-fx-fill: -fx-tempsa1;
+}
+
+.tempsa .determinate-indicator .indicator  {
+	-fx-border-color: -fx-tempsa1;
+}
+
+.tempsa .jauge-bg, .tempsa .jauge-fg {
+	-fx-stroke: -fx-tempsa1;
+}
+
+.bulle .tempsa {
+	-fx-background-color: -fx-tempsa1;
+}
+
+.tempss.label {
+	/*-fx-text-fill: -fx-tempss1;*/
+}
+
+.tempss .determinate-indicator > .progress, .tempss .jauge-fg, .cercle-label.tempss, .notification.tempss {
+    -fx-background-color: -fx-tempss1;
+	-fx-fill: -fx-tempss1;
+}
+
+.tempss .determinate-indicator .indicator {
+	-fx-border-color: -fx-tempss1;
+}
+
+.bulle .tempss {
+	-fx-background-color: -fx-tempss1;
+}
+
+.vitesse.label {
+	/*-fx-text-fill: -fx-vitesse1;*/
+}
+
+.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg, .cercle-label.vitesse, .notification.vitesse {
+    -fx-background-color: -fx-vitesse1;
+	-fx-fill: -fx-vitesse1;
+}
+
+.vitesse .determinate-indicator .indicator {
+	-fx-border-color: -fx-vitesse1;
+}
+
+.bulle .vitesse {
+	-fx-background-color: -fx-vitesse1;
+}
+
+.fatigue.label {
+	/*-fx-text-fill: -fx-fatigue1;*/
+}
+
+.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg, .cercle-label.fatigue, .notification.fatigue {
+    -fx-background-color: -fx-fatigue1;
+	-fx-fill: -fx-fatigue1;
+}
+
+.fatigue .determinate-indicator .indicator {
+	-fx-border-color: -fx-fatigue1;
+}
+
+.bulle .fatigue {
+	-fx-background-color: -fx-fatigue1;
+}
+
+.initiative.label {
+	/*-fx-text-fill: -fx-initiative1;*/
+}
+
+.initiative .determinate-indicator > .progress, .initiative .jauge-fg, .cercle-label.initiative, .notification.initiative {
+    -fx-background-color: -fx-initiative1;
+	-fx-fill: -fx-initiative1;
+}
+
+.initiative .determinate-indicator .indicator {
+	-fx-border-color: -fx-initiative1;
+}
+
+.bulle .initiative {
+	-fx-background-color: -fx-initiative1;
+}
+
+.rowentite {
+	-fx-effect: dropshadow(gaussian, white, 10, 0.05, 0, 0);
+}
+
+.rowentite .vignette {
+	-fx-border-width: 2;
+}
+
+.rowentite.entitepassive .vignette {
+	-fx-border-color: -fx-entitepassive;
+}
+
+.rowentite.entiteactive .vignette {
+	-fx-border-color: -fx-entiteactive;
+}
+
+.rowentite .separator .line {
+	-fx-border-width: 1;
+	-fx-border-color: -fx-blanc2;
+}
+
+.notification {
+	-fx-background-color: -fx-gris1;
+	-fx-padding: 2;
+	-fx-spacing: 2;
+	-fx-vpos: center;
+	-fx-hpos: right;
+}
+
+.notification .label {
+	-fx-font-size: 10;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+}
+
+.notification.envoutement {
+	-fx-background-color: -fx-envoutement;
+}
+
+.notification.sort_passif {
+	-fx-background-color: -fx-sortpassif;
+}
+
+.notification.mort {
+	-fx-background-color: -fx-mort;
+}
+
+.rowentite:disabled {
+	-fx-opacity: 0.4;
 }
 
 .vignette {
-	-fx-background-color: dimgrey;
+	-fx-background-color: -fx-noir2;
 }
 
 .vignette .topEntite {
@@ -154,78 +474,6 @@
 
 .topEntite .nom {
 	-fx-text-fill: white;
-}
-
-.cooldown .determinate-indicator > .progress, .cooldown .jauge-fg, .cercle-label.cooldown {
-    -fx-background-color: -fx-cooldownu;
-	-fx-fill: -fx-cooldown;
-}
-
-.bulle .cooldown, .sortBut .cooldown {
-	-fx-background-color: -fx-cooldown;
-}
-
-.niveau .determinate-indicator > .progress, .niveau .jauge-fg, .cercle-label.niveau {
-    -fx-background-color: -fx-niveau;
-	-fx-fill: -fx-niveau;
-}
-
-.bulle .niveau, .sortBut .niveau {
-	-fx-background-color: -fx-niveau;
-}
-
-.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg, .cercle-label.vitalite {
-    -fx-background-color: -fx-vitalite;
-	-fx-fill: -fx-vitalite;
-}
-
-.bulle .vitalite {
-	-fx-background-color: -fx-vitalite;
-}
-
-.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg, .cercle-label.tempsa {
-    -fx-background-color: -fx-tempsa;
-	-fx-fill: -fx-tempsa;
-}
-
-.bulle .tempsa, .sortBut .tempsa {
-	-fx-background-color: -fx-tempsa;
-}
-
-.tempss .determinate-indicator > .progress, .tempss .jauge-fg, .cercle-label.tempss {
-    -fx-background-color: -fx-tempss;
-	-fx-fill: -fx-tempss;
-}
-
-.bulle .tempss {
-	-fx-background-color: -fx-tempss;
-}
-
-.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg, .cercle-label.vitesse {
-    -fx-background-color: -fx-vitesse;
-	-fx-fill: -fx-vitesse;
-}
-
-.bulle .vitesse {
-	-fx-background-color: -fx-vitesse;
-}
-
-.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg, .cercle-label.fatigue {
-    -fx-background-color: -fx-fatigue;
-	-fx-fill: -fx-fatigue;
-}
-
-.bulle .fatigue, .sortBut .fatigue {
-	-fx-background-color: -fx-fatigue;
-}
-
-.initiative .determinate-indicator > .progress, .initiative .jauge-fg, .cercle-label.initiative {
-    -fx-background-color: -fx-initiative;
-	-fx-fill: -fx-initiative;
-}
-
-.bulle .initiative {
-	-fx-background-color: -fx-initiative;
 }
 
 #hud {
@@ -248,38 +496,23 @@
 	/*-fx-background-color: lightcoral;*/
 }
 
-#pileA .progress-bar:indeterminate > .bar {
-    -fx-background-color: transparent;
-}
-
-#pileA .progress-bar, .progress-bar > .track {
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-	-fx-background-radius: 0;
+#pileA .progress-bar {
+	-fx-border-color: -fx-tempsa1;
 }
 
 #pileA .progress-bar .bar { 
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-	-fx-background-radius: 0;
-}
-
-#pileA .progress-indicator .percentage {
-	-fx-fill: null;
+	-fx-background-color: -fx-tempsa1;
 }
 
 .envTours {
-	-fx-background-color: dimgrey;
+	-fx-opacity: 0.9;
+	-fx-background-color: -fx-noir1;
 	-fx-text-fill: white;
-	-fx-padding: 1;
+	-fx-padding: 0 2 0 2;
 }
 
 .jauge_circu .percentage {
 	-fx-fill: null;
-}
-
-.jauge_circu .label {
-	-fx-fill: red;
 }
 
 #barres {
@@ -299,16 +532,12 @@
 }
 
 .sortBut:selected {
-	-fx-effect: innershadow(gaussian, white, 10, 0.5, 0, 0);
+	/*-fx-effect: innershadow(gaussian, white, 20, 0.05, 0, 0);*/
 }
 
-.sortBut .label {
-	-fx-text-fill: white;
-}
-
-.label {
-	/*-fx-background-color: red;*/
-}
+/*
+ * Hors-combat
+ */
 
 #top {
 	-fx-background-color: red;
@@ -337,11 +566,6 @@
 #sp {
 	-fx-background-color: brown;
 }
-
-
-
-
-
 
 .buttons {
 	-fx-background-color: grey;

@@ -28,6 +28,7 @@ public class EntiteSprite extends ImageView implements VueEntite<ImageView> {
 	public EntiteSprite(EntitePassive ep) {
 		super(DataVue.getEntiteSprite(ep.idClasse));
 		init();
+		getStyleClass().add("entite_sprite");
 		ehud = new EntiteHUD(ep);
 		setPreserveRatio(true);
 		setFocusTraversable(true);
@@ -70,6 +71,16 @@ public class EntiteSprite extends ImageView implements VueEntite<ImageView> {
 	@Override
 	public void estCible(boolean estCible) {
 		hover(estCible);
+	}
+
+	@Override
+	public void alive(boolean alive) {
+		if (!alive) {
+			setDisable(true);
+			setVisible(false);
+			ehud.setDisable(true);
+			ehud.setVisible(false);
+		}
 	}
 
 }

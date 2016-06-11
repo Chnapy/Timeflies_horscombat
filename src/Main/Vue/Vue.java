@@ -20,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 /**
@@ -124,6 +125,24 @@ public class Vue {
 		alert.setHeaderText(null);
 		alert.setContentText(content);
 		alert.show();
+	}
+
+	public static final void turnOnCacheFor(Node n) {
+		try {
+			n.setCache(true);
+		} catch (RuntimeException re) {
+		}
+		if (n instanceof Region) {
+			try {
+				((Region) n).setCacheShape(true);
+			} catch (RuntimeException re) {
+			}
+		}
+		if (n instanceof Parent) {
+			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
+				turnOnCacheFor(c);
+			}
+		}
 	}
 
 	public static final void turnOffPickOnBoundsFor(Node n) {
