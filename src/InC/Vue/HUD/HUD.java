@@ -8,7 +8,7 @@ package InC.Vue.HUD;
 import InC.Vue.HUD.Module.Barres.BarreEnvoutements;
 import InC.Vue.HUD.Module.Barres.BarreSortsActifs;
 import InC.Vue.HUD.Module.Barres.BarreSortsPassifs;
-import InC.Vue.HUD.Module.ChatBox;
+import InC.Vue.HUD.Module.Chat.ChatBox;
 import InC.Vue.HUD.Module.Divers;
 import InC.Vue.HUD.Module.EntiteCours;
 import InC.Vue.Map.Minimap.Minimap;

@@ -24,7 +24,6 @@ import InC.Modele.Pathfinding.AStarPathFinder;
 import InC.Modele.Pathfinding.ClosestHeuristic;
 import InC.Modele.Timer.TourTimer;
 import InC.Modele.Binding.TuileBinding;
-import InC.Modele.Camera.Camera;
 import InC.Modele.Donnees.Envoutement;
 import InC.Modele.Donnees.Equipe;
 import InC.Modele.Donnees.SortActif;
@@ -50,7 +49,7 @@ import java.util.List;
 import javafx.scene.Node;
 import InC.Vue.Map.VueTuile;
 import static Main.Controleur.MainControleur.EXEC;
-import Main.Vue.Vue;
+import Main.Modele.TextManager;
 import Serializable.InCombat.InCombat;
 import Serializable.InCombat.sort.LancerSort;
 import Serializable.InCombat.ListInCombat;
@@ -146,7 +145,7 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 				tuiles[x][y].setBinding(tb);
 			}
 		}
-		ecran.camera.initScale();
+//		ecran.camera.initScale();
 	}
 
 	private void ajoutEntite(EntitePassive e) {
@@ -205,6 +204,8 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 	}
 
 	private void startTour(EntiteActive e, int idTour, long beginTime) {
+		ecran.hud.chat.chatCombat.startTour(idTour, e.idClasse, e.nomDonne.get(), e.caracs.get(TypeCarac.TEMPSACTION).first.get());
+		ecran.camera.moveToNode(ecran.maps.getEntiteSprite(e.idEntite));
 		entiteEnCours.set(e);
 		combatActu.tourActu.set(idTour);
 		entiteEnCours.get().getBinding().positionReference.set(e.getBinding().position.get());
@@ -277,10 +278,12 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 	private void startTourGlobal(int idTourG) {
 		System.out.println("Start tourG" + idTourG);
 		combatActu.tourGlobalActu.set(idTourG);
+		ecran.hud.chat.chatCombat.startTourGlobal(idTourG);
 	}
 
 	private void endTourGlobal() {
 		System.out.println("End tourG" + combatActu.tourGlobalActu.get());
+		ecran.hud.chat.chatCombat.endTourGlobal(combatActu.tourGlobalActu.get());
 	}
 
 	public void waitState() {
@@ -311,8 +314,10 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 	private void debutCombat(DebutCombat pack) {
 		if (pack.beginTime <= System.currentTimeMillis()) {
 			ecran.compteur.setVisible(false);
+			ecran.hud.chat.chatCombat.startCombat(0);
 			tour(pack.dtg);
 		} else {
+			ecran.hud.chat.chatCombat.startCombat((int) (pack.beginTime - System.currentTimeMillis()));
 			SimpleIntegerProperty bind = new SimpleIntegerProperty();
 			DoubleBinding pIndBind = new DoubleBinding() {
 				{
@@ -356,6 +361,9 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 				|| pack.idEntite != entiteEnCours.get().idEntite) {
 			return;
 		}
+		ecran.hud.chat.chatCombat.endTour(combatActu.tourActu.get(),
+				entiteEnCours.get().idClasse,
+				entiteEnCours.get().nomDonne.get());
 		stopTour();
 	}
 
@@ -396,6 +404,7 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 
 	public void action(Action pack) {
 		EntitePassive ep = combatActu.entites.get(pack.idCible);
+		boolean active = ep instanceof EntiteActive;
 		Notification n = null;
 		Position p = null;
 		if (pack instanceof AlterCarac) {
@@ -411,6 +420,9 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 					combatActu.entites.get(pack.idCible)
 					.getBinding().position.get()
 			);
+			ecran.hud.chat.chatCombat.addActionAlterCarac(ep.idClasse,
+					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
+					active, ((AlterCarac) pack).type, ((AlterCarac) pack).valeur);
 		} else if (pack instanceof Rotation) {
 			ep.getBinding().orientation.set(((Rotation) pack).direction);
 		} else if (pack instanceof Teleportation) {
@@ -423,6 +435,11 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 					combatActu.entites.get(pack.idCible)
 					.getBinding().position.get()
 			);
+			ecran.hud.chat.chatCombat.addActionAddEnvoutement(ep.idClasse,
+					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
+					active, ((AddEnvoutement) pack).idClasseEnvoutement,
+					TextManager.getSortName(((AddEnvoutement) pack).idClasseEnvoutement).get(),
+					((AddEnvoutement) pack).nbrTours);
 		} else if (pack instanceof AddSortPassif) {
 			ep.sortsP.putIfAbsent(((AddSortPassif) pack).idClasseSP,
 					new SortPassif(((AddSortPassif) pack).idClasseSP, -1));
@@ -431,6 +448,10 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 					combatActu.entites.get(pack.idCible)
 					.getBinding().position.get()
 			);
+			ecran.hud.chat.chatCombat.addActionDeclencherSortPassif(ep.idClasse,
+					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
+					active, ((AddSortPassif) pack).idClasseSP,
+					TextManager.getSortName(((AddSortPassif) pack).idClasseSP).get());
 		} else if (pack instanceof Mort) {
 			ep.getBinding().alive.set(false);
 			map.listEntitesBinding.remove(ep.getBinding());
@@ -439,8 +460,10 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 					combatActu.entites.get(pack.idCible)
 					.getBinding().position.get()
 			);
+			ecran.hud.chat.chatCombat.addActionMort(ep.idClasse,
+					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
+					active);
 		} else if (pack instanceof Invocation) {
-			//TODO
 			InEntitePassive iep = ((Invocation) pack).invoc;
 			Equipe equipe = combatActu.equipes.get(((Invocation) pack).numeroEquipe);
 			EntitePassive e;
@@ -450,6 +473,7 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 				e = new EntitePassive(iep, equipe);
 			}
 			ajoutEntite(e);
+			ecran.hud.chat.chatCombat.addActionInvocation(iep.idClasse, e.nomClasse.get(), e instanceof EntiteActive);
 		}
 		if (n != null) {
 			ecran.maps.grille.notifMap.notifierAction(n, p);

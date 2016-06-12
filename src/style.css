@@ -71,12 +71,125 @@
 	-fx-entiteactive: -fx-jaune1;
 	-fx-entitepassive: -fx-bleu1;
 	-fx-invocation: -fx-violet1;
+	-fx-tourglobal: -fx-blanc1;
+	-fx-tour: -fx-blanc2;
+	
+	/*
+	 * Chat
+	 */
+	-fx-chatcbox: transparent;
+	-fx-chatcmessage: transparent;
 
 	/*
 	 * Couleurs sorts
 	 */
 	-fx-sort-1: -fx-deplacement;
 	-fx-sort1: -fx-rouge1;
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+#chatcombat {
+	/*-fx-background-color: red;*/
+}
+
+.chatcbox {
+	-fx-background-color: -fx-chatcbox;
+}
+
+.chatcbox .chatchild {
+	-fx-padding: 0 0 0 4;
+}
+
+.chatcmessage {
+	-fx-padding: 2;
+}
+
+.chattg.chat0 {
+	-fx-background-color: -fx-tourglobal;
+}
+
+.chattg.chat1 {
+	-fx-background-color: derive(-fx-tourglobal, -10%);
+}
+
+.chatt.chat0 {
+	-fx-background-color: -fx-tour;
+}
+
+.chatt.chat1 {
+	-fx-background-color: derive(-fx-tour, -10%);
+}
+
+.chatlancersort.chat0 {
+	-fx-background-color: -fx-sortactif;
+}
+
+.chatlancersort.chat1 {
+	-fx-background-color: derive(-fx-sortactif, -10%);
+}
+
+.chatlancerdeplacement.chat0 {
+	-fx-background-color: -fx-deplacement;
+}
+
+.chatlancerdeplacement.chat1 {
+	-fx-background-color: derive(-fx-deplacement, -10%);
+}
+
+.chatenvoutement {
+	-fx-background-color: -fx-envoutement;
+}
+
+.chatmort {
+	-fx-background-color: -fx-noir2;
+}
+
+.chatmort * {
+	-fx-text-fill: white;
+	-fx-fill: white;
+}
+
+.chatannulation * {
+	-fx-fill: -fx-rouge2;
+	-fx-font-weight: bold;
+}
+
+.chatinvocation {
+	-fx-background-color: -fx-invocation;
+}
+
+.chatsp {
+	-fx-background-color: -fx-turquoise1;
+}
+
+.chatentite {
+	-fx-padding: 0 2 0 2;
+	-fx-font-weight: bold;
+}
+
+.chatentite.chatactive {
+	-fx-border-color: derive(-fx-entiteactive, 50%);
+}
+
+.chatentite.chatpassive {
+	-fx-border-color: derive(-fx-entitepassive, 50%);
+}
+
+.chatsort {
+	-fx-padding: 0 2 0 0;
+	-fx-border-color: #00000022;
+	-fx-background-color: #00000022;
+	-fx-text-fill: white;
+}
+
+.chattemps {
+	-fx-padding: 0 2 0 2;
+	-fx-border-color: #00000022;
+	-fx-background-color: #00000022;
+	-fx-text-fill: white;
 }
 
 .jauge *, .tuile .polygon {
@@ -148,10 +261,6 @@
 
 #minimap {
 	/*-fx-padding: 1px;*/
-}
-
-#chat {
-	-fx-opacity: 0.5;
 }
 
 #barreSA {
@@ -264,10 +373,6 @@
     -fx-padding: 0;
 }
 
-.cooldown.label {
-	/*-fx-text-fill: -fx-cooldown;*/
-}
-
 .cooldown .determinate-indicator > .progress, .cooldown .jauge-fg, .cercle-label.cooldown, .notification.cooldown {
     -fx-background-color: -fx-cooldown;
 	-fx-fill: -fx-cooldown;
@@ -279,10 +384,6 @@
 
 .bulle .cooldown {
 	-fx-background-color: -fx-cooldown;
-}
-
-.niveau.label {
-	/*-fx-text-fill: -fx-niveau1;*/
 }
 
 .niveau .determinate-indicator > .progress, .niveau .jauge-fg, .cercle-label.niveau, .notification.niveau {
@@ -298,11 +399,7 @@
 	-fx-background-color: -fx-niveau1;
 }
 
-.vitalite.label {
-	/*-fx-text-fill: -fx-vitalite;*/
-}
-
-.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg, .cercle-label.vitalite, .notification.vitalite {
+.vitalite .determinate-indicator > .progress, .vitalite .jauge-fg, .cercle-label.vitalite, .notification.vitalite, .chataltercarac.vitalite {
     -fx-background-color: -fx-vitalite;
 	-fx-fill: -fx-vitalite;
 }
@@ -323,7 +420,7 @@
 	/*-fx-text-fill: -fx-tempsa1;*/
 }
 
-.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg, .cercle-label.tempsa, .notification.tempsa {
+.tempsa .determinate-indicator > .progress, .tempsa .jauge-fg, .cercle-label.tempsa, .notification.tempsa, .chataltercarac.tempsa {
     -fx-background-color: -fx-tempsa1;
 	-fx-fill: -fx-tempsa1;
 }
@@ -340,11 +437,7 @@
 	-fx-background-color: -fx-tempsa1;
 }
 
-.tempss.label {
-	/*-fx-text-fill: -fx-tempss1;*/
-}
-
-.tempss .determinate-indicator > .progress, .tempss .jauge-fg, .cercle-label.tempss, .notification.tempss {
+.tempss .determinate-indicator > .progress, .tempss .jauge-fg, .cercle-label.tempss, .notification.tempss, .chataltercarac.tempss {
     -fx-background-color: -fx-tempss1;
 	-fx-fill: -fx-tempss1;
 }
@@ -357,11 +450,7 @@
 	-fx-background-color: -fx-tempss1;
 }
 
-.vitesse.label {
-	/*-fx-text-fill: -fx-vitesse1;*/
-}
-
-.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg, .cercle-label.vitesse, .notification.vitesse {
+.vitesse .determinate-indicator > .progress, .vitesse .jauge-fg, .cercle-label.vitesse, .notification.vitesse, .chataltercarac.vitesse {
     -fx-background-color: -fx-vitesse1;
 	-fx-fill: -fx-vitesse1;
 }
@@ -374,11 +463,7 @@
 	-fx-background-color: -fx-vitesse1;
 }
 
-.fatigue.label {
-	/*-fx-text-fill: -fx-fatigue1;*/
-}
-
-.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg, .cercle-label.fatigue, .notification.fatigue {
+.fatigue .determinate-indicator > .progress, .fatigue .jauge-fg, .cercle-label.fatigue, .notification.fatigue, .fatigue.chataltercarac {
     -fx-background-color: -fx-fatigue1;
 	-fx-fill: -fx-fatigue1;
 }
@@ -391,11 +476,7 @@
 	-fx-background-color: -fx-fatigue1;
 }
 
-.initiative.label {
-	/*-fx-text-fill: -fx-initiative1;*/
-}
-
-.initiative .determinate-indicator > .progress, .initiative .jauge-fg, .cercle-label.initiative, .notification.initiative {
+.initiative .determinate-indicator > .progress, .initiative .jauge-fg, .cercle-label.initiative, .notification.initiative, .initiative.chataltercarac {
     -fx-background-color: -fx-initiative1;
 	-fx-fill: -fx-initiative1;
 }

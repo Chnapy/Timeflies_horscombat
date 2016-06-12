@@ -14,13 +14,15 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import javafx.animation.Animation;
 import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Bounds;
-import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.util.Duration;
@@ -32,43 +34,47 @@ import javafx.util.Duration;
 public class Camera {
 
 	private static final double MAX_SCROLL = 256, MIN_SCROLL = 32,
-			INITIAL_SCALE = 1, SCALE_INCREMENT = 0.1;
+			INITIAL_SCALE = 1, SCALE_INCREMENT = 0.3;
 	private static final Duration D_SCALE_DEFAULT = new Duration(500),
-			D_TRANSLATE_DEFAULT = new Duration(200);
+			D_TRANSLATE_DEFAULT = new Duration(200),
+			D_MOVETONODE_DEFAULT = new Duration(500);
 
-	private final TranslateTransition tranTran;
-	private final ScaleTransition scalTran;
+	private final TranslateTransition translater;
+	private final ScaleTransition scaler;
+	private final ParallelTransition cam;
 
 	private final Grille grille;
 	private final Scalable node;
-	private final SimpleBooleanProperty midButtonPressed;
-	private final Duo<Double, Double> pos;
 
-	private double scale;
+	private final SimpleBooleanProperty midButtonPressed;
+	private final Duo<Double, Double> posActu;
+	private final SimpleDoubleProperty scaleActu;
 
 	public Camera(Grille grille) {
 		this.grille = grille;
 		this.node = new Scalable(grille);
 		midButtonPressed = new SimpleBooleanProperty(false);
-		pos = new Duo(0d, 0d);
+		posActu = new Duo(0d, 0d);
+		scaleActu = new SimpleDoubleProperty();
 
-		this.tranTran = new TranslateTransition();
-		tranTran.setNode(node);
-		tranTran.setInterpolator(Interpolator.LINEAR);
-		tranTran.setOnFinished((e) -> {
+		translater = new TranslateTransition(D_SCALE_DEFAULT);
+		scaler = new ScaleTransition(D_SCALE_DEFAULT);
+		cam = new ParallelTransition(node, scaler, translater);
+
+		cam.setInterpolator(Interpolator.LINEAR);
+		cam.setOnFinished((e) -> {
 			if (midButtonPressed.get()) {
-				moveTo(pos.first, pos.second);
+				moveTo(posActu.first, posActu.second);
 			}
 		});
-		this.scalTran = new ScaleTransition(D_SCALE_DEFAULT, node);
-		scalTran.setOnFinished((e) -> {
-			Bounds b = grille.getTileMap().localToScene(grille.getTileMap().getBoundsInLocal());
-			if (b.getMinX() > 0 || b.getMinY() > 0
-					|| b.getWidth() + b.getMinX() < Vue.PRIMARYSTAGE.getWidth()
-					|| b.getHeight() + b.getMinY() < Vue.PRIMARYSTAGE.getHeight()) {
-				centerCamera();
-			}
-		});
+//		scalTran.setOnFinished((e) -> {
+//			Bounds b = grille.getTileMap().localToScene(grille.getTileMap().getBoundsInLocal());
+//			if (b.getMinX() > 0 || b.getMinY() > 0
+//					|| b.getWidth() + b.getMinX() < Vue.PRIMARYSTAGE.getWidth()
+//					|| b.getHeight() + b.getMinY() < Vue.PRIMARYSTAGE.getHeight()) {
+//				centerCamera();
+//			}
+//		});
 
 		grille.setOnMousePressed((e) -> {
 			if (e.getButton() == MouseButton.MIDDLE) {
@@ -83,15 +89,24 @@ public class Camera {
 		});
 		grille.setOnMouseDragged((e) -> {
 			if (e.isMiddleButtonDown()) {
-				pos.first = e.getSceneX();
-				pos.second = e.getSceneY();
+				posActu.first = e.getSceneX();
+				posActu.second = e.getSceneY();
 			}
 		});
 		grille.setOnScroll((e) -> {
-			double s = scale + (e.getDeltaY() < 0 ? -1 : 1) * SCALE_INCREMENT;
-			scale(s);
+			if (cam.getStatus() != Animation.Status.RUNNING) {
+				double s = scaleActu.get() + (e.getDeltaY() < 0 ? -1 : 1) * SCALE_INCREMENT;
+				scale(s);
+			}
 		});
 		scale(INITIAL_SCALE);
+	}
+
+	public void initScale() {
+		Platform.runLater(() -> {
+			double s = Vue.PRIMARYSTAGE.getWidth() / grille.getWidth();
+			scale(s);
+		});
 	}
 
 	public void centerCamera() {
@@ -102,19 +117,67 @@ public class Camera {
 		moveTo(Vue.PRIMARYSTAGE.getWidth() / 4, Vue.PRIMARYSTAGE.getHeight() / 4, time);
 	}
 
+	public void moveToNode(Node node) {
+		moveToNode(node, scaleActu.get());
+	}
+
+	public void moveToNode(Node node, double scale) {
+		moveToNode(node, scale, D_MOVETONODE_DEFAULT);
+	}
+
+	public void moveToNode(Node node, double scale, Duration time) {
+		Bounds b = node.localToScene(node.getBoundsInLocal());
+		moveAndScale(scale,
+				b.getMinX() + b.getWidth() / 2,
+				b.getMinY() + b.getHeight() / 2,
+				time);
+	}
+
 	public void moveTo(double x, double y) {
 		moveTo(x, y, D_TRANSLATE_DEFAULT);
 	}
 
 	public void moveTo(double x, double y, Duration time) {
-		tranTran.stop();
-		tranTran.setDuration(time);
+		moveAndScale(scaleActu.get(), x, y, time);
+	}
+
+	public final void scale(double s) {
+		scale(s, D_SCALE_DEFAULT);
+	}
+
+	public void scale(double s, Duration time) {
+		moveAndScale(s,
+				Vue.PRIMARYSTAGE.getScene().getWidth() / 2,
+				Vue.PRIMARYSTAGE.getScene().getHeight() / 2,
+				time);
+	}
+
+	public void moveAndScale(double s, double x, double y, Duration time) {
+		if (cam.getStatus() == Animation.Status.RUNNING) {
+			cam.jumpTo(cam.getTotalDuration());
+		}
+
+		if (AbstractMap.TILE_WIDTH * s > MAX_SCROLL) {
+			s = MAX_SCROLL / AbstractMap.TILE_WIDTH;
+		} else if (AbstractMap.TILE_WIDTH * s < MIN_SCROLL) {
+			s = MIN_SCROLL / AbstractMap.TILE_WIDTH;
+		}
+		double diff = s - scaleActu.get();
 		double offsetX = getOffsetX(x);
 		double offsetY = getOffsetY(y);
-		tranTran.setByX(offsetX);
-		tranTran.setByY(offsetY);
+		scaleActu.set(s);
 
-		tranTran.playFromStart();
+		translater.setDuration(time);
+		translater.setByX(node.getTranslateX() * diff + offsetX * (1 + diff));
+		translater.setByY(node.getTranslateY() * diff + offsetY * (1 + diff));
+
+		scaler.setDuration(time);
+		scaler.setFromX(node.getScaleX());
+		scaler.setFromY(node.getScaleY());
+		scaler.setToX(s);
+		scaler.setToY(s);
+
+		cam.playFromStart();
 	}
 
 	private double getOffsetX(double x) {
@@ -147,41 +210,6 @@ public class Camera {
 		}
 
 		return byY;
-	}
-
-	public void jumpRight(double x) {
-		node.setTranslateX(node.getTranslateX() - x);
-	}
-
-	public void jumpBottom(double y) {
-		node.setTranslateY(node.getTranslateY() - y);
-	}
-
-	public void initScale() {
-		Platform.runLater(() -> {
-			double s = Vue.PRIMARYSTAGE.getWidth() / grille.getWidth();
-			scale(s);
-		});
-	}
-
-	public final void scale(double s) {
-		scale(s, D_SCALE_DEFAULT);
-	}
-
-	public void scale(double s, Duration time) {
-		if (AbstractMap.TILE_WIDTH * s > MAX_SCROLL) {
-			s = MAX_SCROLL / AbstractMap.TILE_WIDTH;
-		} else if (AbstractMap.TILE_WIDTH * s < MIN_SCROLL) {
-			s = MIN_SCROLL / AbstractMap.TILE_WIDTH;
-		}
-		scale = s;
-		scalTran.stop();
-		scalTran.setDuration(time);
-		scalTran.setFromX(node.getScaleX());
-		scalTran.setFromY(node.getScaleY());
-		scalTran.setToX(s);
-		scalTran.setToY(s);
-		scalTran.playFromStart();
 	}
 
 	private static class Scalable extends Node {

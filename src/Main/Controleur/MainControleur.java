@@ -216,7 +216,7 @@ public class MainControleur {
 				String nomDonne = "nomD" + (ient * ieq + ient);
 				String nomClasse = "nomC" + (ient * ieq + ient);
 				int niveau = (int) (40 * Math.random());
-				Position pos = new Position((ient * ieq + ient), (ient * ieq + ient) + 1);
+				Position pos = new Position((ient * ieq + ient) +10, (ient * ieq + ient) +10 + 1);
 				Orientation o = Orientation.NORD;
 				CaracteristiquePhysique cp = new CaracteristiquePhysique((int) (200 * Math.random()), (int) (40000), (int) (10000 * Math.random()), (int) (190 * Math.random()), (int) (20 * Math.random()), (int) (400 * Math.random()));
 				ArrayList<InSortPassif> lsp = new ArrayList();

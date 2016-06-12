@@ -8,6 +8,7 @@ package InC.Modele.Timer;
 import InC.Controleur.InCControleur;
 import InC.Vue.HUD.Module.PileBox;
 import static Main.Controleur.MainControleur.EXEC;
+import Main.Modele.Data;
 import Serializable.InCombat.action.Action;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
@@ -80,8 +81,16 @@ public class PileAction extends SimpleListProperty<ActionSort> {
 					return;
 				}
 				as.enCours = true;
-				Platform.runLater(()
-						-> controleur.getEcran().maps.grille.effetsMap.lancerEffet(as));
+				Platform.runLater(() -> {
+					if (as.sort.idClasse == Data.DEPLACEMENT_IDCLASSE) {
+						controleur.getEcran().hud.chat.chatCombat.startDeplacement(
+								as.id, as.duree.get());
+					} else {
+						controleur.getEcran().hud.chat.chatCombat.startSort(
+								as.id, as.sort.idClasse, as.sort.nom.get(), as.duree.get());
+					}
+					controleur.getEcran().maps.grille.effetsMap.lancerEffet(as);
+				});
 				try {
 					Thread.sleep(as.duree.get());
 					for (Action a : as.actions) {
@@ -91,8 +100,10 @@ public class PileAction extends SimpleListProperty<ActionSort> {
 							-> controleur.getEcran().maps.grille.effetsMap.stopEffet());
 				} catch (InterruptedException ex) {
 					System.out.println("SORT interrompu");
-					Platform.runLater(()
-							-> controleur.getEcran().maps.grille.effetsMap.interruptEffet());
+					Platform.runLater(() -> {
+						controleur.getEcran().hud.chat.chatCombat.annulerSort();
+						controleur.getEcran().maps.grille.effetsMap.interruptEffet();
+					});
 				}
 				as.enCours = false;
 				try {
