@@ -94,7 +94,7 @@ public class PileAction extends SimpleListProperty<ActionSort> {
 				try {
 					Thread.sleep(as.duree.get());
 					for (Action a : as.actions) {
-						controleur.action(a);
+						controleur.actionControleur.action(a);
 					}
 					Platform.runLater(()
 							-> controleur.getEcran().maps.grille.effetsMap.stopEffet());

@@ -5,6 +5,8 @@
  */
 package Main.Modele;
 
+import javafx.scene.input.KeyCode;
+
 /**
  * Data.java
  *
@@ -37,4 +39,6 @@ public class Data {
 	
 	public static final String PATH_LANG = "assets/strings/";
 	public static final String FILE_MAIN_LANG = "main.xml";
+	
+	public static final KeyCode HIDE_HUD = KeyCode.CONTROL;
 }

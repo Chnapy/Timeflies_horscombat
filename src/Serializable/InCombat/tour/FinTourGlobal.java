@@ -17,7 +17,7 @@ public class FinTourGlobal extends Tour {
 	
 	public final int idTG;
 
-	public FinTourGlobal(long tempsDebut, int idTG, Action[] actions) {
+	public FinTourGlobal(long tempsDebut, int idTG, Action... actions) {
 		super(tempsDebut, actions);
 		this.idTG = idTG;
 	}

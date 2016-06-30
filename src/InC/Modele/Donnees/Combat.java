@@ -50,8 +50,8 @@ public class Combat {
 	}
 
 	public boolean dansMonEquipe(EntitePassive e) {
-		return true;
-//		return e.equipe.equals(monEquipe);
+//		return true;
+		return e.equipe.equals(monEquipe);
 	}
 
 }

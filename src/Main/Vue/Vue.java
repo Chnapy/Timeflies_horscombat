@@ -150,7 +150,7 @@ public class Vue {
 			n.setPickOnBounds(false);
 		} catch (RuntimeException re) {
 		}
-		n.setOnMouseClicked((e) -> System.out.println(n));
+//		n.setOnMouseClicked((e) -> System.out.println(n));
 		if (n instanceof Parent) {
 			for (Node c : ((Parent) n).getChildrenUnmodifiable()) {
 				turnOffPickOnBoundsFor(c);

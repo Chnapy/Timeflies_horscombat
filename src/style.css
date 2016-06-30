@@ -62,23 +62,26 @@
 	-fx-ttrou: -fx-noir1;
 	-fx-tobstacle: -fx-rouge2;
 	-fx-deplacement: -fx-vert1;
-	-fx-zoneportee: -fx-bleu1;
+	-fx-zoneportee: -fx-jaune1;
 	-fx-zoneaction: -fx-rouge1;
 	-fx-envoutement: -fx-turquoise2;
 	-fx-sortpassif: -fx-turquoise1;
-	-fx-sortactif: -fx-bleu1;
+	-fx-sortactif: -fx-jaune1;
 	-fx-mort: -fx-noir2;
 	-fx-entiteactive: -fx-jaune1;
 	-fx-entitepassive: -fx-bleu1;
 	-fx-invocation: -fx-violet1;
 	-fx-tourglobal: -fx-blanc1;
 	-fx-tour: -fx-blanc2;
-	
+
 	/*
 	 * Chat
 	 */
 	-fx-chatcbox: transparent;
 	-fx-chatcmessage: transparent;
+	-fx-chatgeneral: -fx-noir2;
+	-fx-chatequipe: -fx-jaune1;
+	-fx-chatprive: -fx-bleu1;
 
 	/*
 	 * Couleurs sorts
@@ -88,7 +91,7 @@
 }
 
 .scroll-pane > .viewport {
-   -fx-background-color: transparent;
+	-fx-background-color: transparent;
 }
 
 #chatcombat {
@@ -190,6 +193,60 @@
 	-fx-border-color: #00000022;
 	-fx-background-color: #00000022;
 	-fx-text-fill: white;
+}
+
+.chattab {
+	-fx-padding: 0;
+	-fx-border-radius: 0;
+	-fx-background-radius: 0;
+	-fx-opacity: 0.5;
+}
+
+.chattab:selected {
+	-fx-opacity: 1;
+}
+
+.tabgeneral {
+	-fx-background-color: -fx-chatgeneral;
+}
+
+.tabequipe {
+	-fx-background-color: -fx-chatequipe;
+}
+
+.tabprive {
+	-fx-background-color: -fx-chatprive;
+}
+
+.chatnmessage .auteur {
+	/*-fx-font-weight: bold;*/
+}
+
+.chatnmgeneral .chatitem {
+	-fx-fill: -fx-chatgeneral;
+	-fx-text-fill: -fx-chatgeneral;
+}
+
+.chatnmgeneral .auteur {
+	-fx-text-fill: derive(-fx-chatgeneral, -20%);
+}
+
+.chatnmequipe .chatitem {
+	-fx-fill: -fx-chatequipe;
+	-fx-text-fill: -fx-chatequipe;
+}
+
+.chatnmequipe .auteur {
+	-fx-text-fill: derive(-fx-chatequipe, -20%);
+}
+
+.chatnmprive .chatitem {
+	-fx-fill: -fx-chatprive;
+	-fx-text-fill: -fx-chatprive;
+}
+
+.chatnmprive .auteur {
+	-fx-text-fill: derive(-fx-chatprive, -20%);
 }
 
 .jauge *, .tuile .polygon {

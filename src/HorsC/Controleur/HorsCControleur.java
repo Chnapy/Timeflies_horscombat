@@ -135,6 +135,7 @@ public class HorsCControleur extends Controleur<HorsCVue, HorsCombat> {
 	}
 
 	public MapSerializable getMapS() {
+		System.out.println(mapS.nom);
 		return mapS;
 	}
 

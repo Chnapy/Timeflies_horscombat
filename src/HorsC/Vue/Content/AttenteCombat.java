@@ -5,6 +5,7 @@
  */
 package HorsC.Vue.Content;
 
+import Main.Modele.TextManager;
 import Main.Vue.Vue;
 import Serializable.HorsCombat.HorsCombat.DonneeJoueur;
 import Serializable.HorsCombat.HorsCombat.DonneePerso;
@@ -229,7 +230,8 @@ public class AttenteCombat extends Content {
 			niveau = new Label(dp.niveau + "");
 			niveau.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 			niveau.setTextFill(Color.LIGHTGREY);
-			nom = new Label(dp.nomClasse);
+			nom = new Label();
+			nom.textProperty().bind(TextManager.getEntiteName((int) dp.idClasse));
 			nom.setTextFill(Color.GAINSBORO);
 
 			getChildren().addAll(niveau, nom);

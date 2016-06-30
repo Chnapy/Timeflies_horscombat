@@ -21,7 +21,7 @@ public class ChatDebutTour extends ChatCBox {
 				"Tour n°" + idT + " - ",
 				new ChatEntite(idClasse, nomEntite, true),
 				" - ",
-				new ChatTemps((double) (ta / 100) / 10 + "s")
+				new ChatTemps((double) (ta / 100) / 10, "s")
 				
 		));
 		getStyleClass().addAll("chatt", "chat" + idT % 2);

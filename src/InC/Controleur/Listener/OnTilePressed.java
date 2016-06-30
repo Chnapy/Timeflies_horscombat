@@ -9,6 +9,7 @@ import InC.Controleur.InCControleur;
 import static InC.Modele.ActionState.DEPLACEMENT;
 import InC.Modele.Map.Tuile;
 import InC.Modele.Timer.PileAction;
+import Main.Modele.Data;
 import Serializable.InCombat.Orientation;
 import Serializable.InCombat.sort.LancerSort;
 import Serializable.InCombat.sort.Deplacement;
@@ -64,6 +65,8 @@ public class OnTilePressed implements ChangeListener<Boolean> {
 				dep = new Deplacement(timeActu + (i - 1) * duree,
 						PileAction.getNewID(),
 						controleur.entiteEnCours.get().idEntite,
+						Data.DEPLACEMENT_IDCLASSE,
+						Data.ROTATION_IDCLASSE,
 						duree,
 						controleur.combatActu.tourActu.get(),
 						controleur.path.get(i - 1),
@@ -72,6 +75,7 @@ public class OnTilePressed implements ChangeListener<Boolean> {
 				dep = new Deplacement(timeActu + (i - 1) * duree,
 						PileAction.getNewID(),
 						controleur.entiteEnCours.get().idEntite,
+						Data.DEPLACEMENT_IDCLASSE,
 						duree,
 						controleur.combatActu.tourActu.get(),
 						controleur.path.get(i - 1),

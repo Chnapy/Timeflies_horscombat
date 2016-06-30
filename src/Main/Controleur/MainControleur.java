@@ -24,10 +24,7 @@ import Serializable.InCombat.ListInCombat;
 import Serializable.InCombat.Orientation;
 import Serializable.InCombat.TypeCarac;
 import Serializable.InCombat.action.AddEnvoutement;
-import Serializable.InCombat.action.AddSortPassif;
 import Serializable.InCombat.action.AlterCarac;
-import Serializable.InCombat.action.Invocation;
-import Serializable.InCombat.action.Mort;
 import Serializable.InCombat.donnee.InEntiteActive;
 import Serializable.InCombat.donnee.InEntitePassive;
 import Serializable.InCombat.donnee.InEquipe;
@@ -36,7 +33,6 @@ import Serializable.InCombat.donnee.InSortPassif;
 import Serializable.InCombat.tour.DebutCombat;
 import Serializable.InCombat.tour.DebutTour;
 import Serializable.InCombat.tour.DebutTourGlobal;
-import Serializable.InCombat.tour.FinTour;
 import Serializable.InCombat.zone.Carre;
 import Serializable.InCombat.zone.Zone;
 import Serializable.Log.Log;
@@ -59,7 +55,7 @@ import javafx.stage.Stage;
  */
 public class MainControleur {
 
-	public static final ExecutorService EXEC = Executors.newFixedThreadPool(16);
+	public static final ExecutorService EXEC = Executors.newFixedThreadPool(64);
 
 	private static LogControleur lc;
 	private static HorsCControleur hcc;
@@ -74,16 +70,16 @@ public class MainControleur {
 		hcc = null;
 		icc = null;
 
-		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("TestMap6.tfmap")));
-			lancementCombat(DEBUG_VUE(), (MapSerializable) ois.readObject());
-		} catch (ClassNotFoundException | IOException ex) {
-			Logger.getLogger(MainControleur.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		Vue.show();
+//		try {
+//			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("TestMap6.tfmap")));
+//			lancementCombat(DEBUG_VUE(), (MapSerializable) ois.readObject());
+//		} catch (ClassNotFoundException | IOException ex) {
+//			Logger.getLogger(MainControleur.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//		Vue.show();
 
-//		lc = new LogControleur();
-//		lc.start();
+		lc = new LogControleur();
+		lc.start();
 	}
 
 	public static void logged() {
@@ -95,65 +91,63 @@ public class MainControleur {
 
 	public static void lancementCombat(ChargementCombat pack, MapSerializable mapS) {
 		Modele.state = COMBAT;
-		icc = new InCControleur();
+		icc = new InCControleur(pack, mapS);
 		Vue.setEcran(icc.getEcran());
-		icc.packetRecu(pack);
-		icc.setMap(mapS);
 		icc.start();
-		new Thread(() -> {
-			try {
+//		new Thread(() -> {
+//			try {
 //				Thread.sleep(2000);
 //				Platform.runLater(() -> {
 //					receiveFromServer(new Tour(0, 0));
 //				});
 //				Thread.sleep(5000);
-				Platform.runLater(() -> {
-					receiveFromServer(new DebutCombat(System.currentTimeMillis(),
-							new DebutTourGlobal(-1, 0, new long[]{
-						1, 2, 0, 3
-					}, new DebutTour(System.currentTimeMillis(), 0, 0)
-							)
-					));
-				});
+//				Platform.runLater(() -> {
+//					receiveFromServer(new DebutCombat(System.currentTimeMillis(),
+//							new DebutTourGlobal(-1, 0, new long[]{
+//						1, 2, 0, 3
+//					}, new DebutTour(System.currentTimeMillis(), 0, 0)
+//							)
+//					));
+//				});
 //				Thread.sleep(5000);
 //				Platform.runLater(() -> {
 //					receiveFromServer(new AnnulerSort(0));
 //				});
 //				Thread.sleep(8000);
-				Platform.runLater(() -> {
-					ArrayList<InCombat> ar = new ArrayList();
-					ar.add(new LancerSort(System.currentTimeMillis(), 10, 1, 0, 1000, 0, new Position(3, 3),
-							new AlterCarac(1, 0, 0, TypeCarac.VITALITE, -50),
-							new AlterCarac(1, 0, 0, TypeCarac.VITESSE, -10),
-							new AlterCarac(1, 0, 0, TypeCarac.FATIGUE, 3)));
-					ar.add(new LancerSort(System.currentTimeMillis() + 000, 11, 1, 0, 1000, 0, new Position(3, 3),
-							new AlterCarac(1, 0, 0, TypeCarac.VITESSE, -10)));
-					ar.add(new LancerSort(System.currentTimeMillis() + 000, 12, 1, 0, 1000, 0, new Position(3, 3),
-							new AlterCarac(1, 0, 0, TypeCarac.FATIGUE, 3)));
-					receiveFromServer(new ListInCombat(ar));
-				});
-				Thread.sleep(5000);
-				Platform.runLater(() -> {
-					ArrayList<InSortPassif> listSP = new ArrayList();
-					listSP.add(new InSortPassif(0, 23));
-					ArrayList<InCombat> ar = new ArrayList();
-					ar.add(new Invocation(0, 0, 0, new InEntiteActive(1000, 3, 0, "TOTO", 3, new Position(0, 0), Orientation.OUEST, new CaracteristiquePhysique(120, 30000, 4000, 100, 12, 120), listSP, new ArrayList(), 500), 0, new Position(0, 0)));
-					ar.add(new AddEnvoutement(0, 1, 0, 1, 3));
-					ar.add(new AddSortPassif(1, 0, 1, 2));
-					ar.add(new Mort(1, 2, 2));
-					receiveFromServer(new ListInCombat(ar));
-				});
-				Thread.sleep(10000);
-				Platform.runLater(() -> {
-					ArrayList<InCombat> ar = new ArrayList();
-					ar.add(new FinTour(System.currentTimeMillis(), 0, 0));
-					ar.add(new DebutTour(System.currentTimeMillis(), 1, 2));
-					receiveFromServer(new ListInCombat(ar));
-				});
-			} catch (InterruptedException ex) {
-				Logger.getLogger(MainControleur.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}).start();
+//				Platform.runLater(() -> {
+//					ArrayList<InCombat> ar = new ArrayList();
+//					ar.add(new LancerSort(System.currentTimeMillis(), 10, 1, 0, 1000, 0, new Position(3, 3),
+//							new AlterCarac(1, 0, 0, TypeCarac.VITALITE, -50),
+//							new AlterCarac(1, 0, 0, TypeCarac.VITESSE, -10),
+//							new AlterCarac(1, 0, 0, TypeCarac.FATIGUE, 3)));
+//					ar.add(new LancerSort(System.currentTimeMillis() + 00, 11, 1, 0, 1000, 0, new Position(3, 3),
+//							new AlterCarac(1, 0, 0, TypeCarac.VITESSE, -10)));
+//					ar.add(new LancerSort(System.currentTimeMillis() + 00, 12, 1, 0, 1000, 0, new Position(3, 3),
+//							new AlterCarac(1, 0, 0, TypeCarac.FATIGUE, 3)));
+//					receiveFromServer(new ListInCombat(ar));
+//				});
+//				Thread.sleep(5000);
+//				Platform.runLater(() -> {
+//					ArrayList<InSortPassif> listSP = new ArrayList();
+//					listSP.add(new InSortPassif(0, 23));
+//					ArrayList<InCombat> ar = new ArrayList();
+//					ar.add(new Invocation(0, 0, 0, new InEntiteActive(1000, 3, 0, "TOTO", 3, new Position(0, 0), Orientation.OUEST, new CaracteristiquePhysique(120, 30000, 4000, 100, 12, 120), listSP, new ArrayList(), 500), 0, new Position(0, 0)));
+//					ar.add(new AddEnvoutement(0, 1, 0, 1, 3));
+//					ar.add(new AddSortPassif(1, 0, 1, 2));
+//					ar.add(new Mort(1, 2, 2));
+//					receiveFromServer(new ListInCombat(ar));
+//				});
+//				Thread.sleep(10000);
+//				Platform.runLater(() -> {
+//					ArrayList<InCombat> ar = new ArrayList();
+////					ar.add(new FinTour(System.currentTimeMillis(), 0, 0));
+////					ar.add(new DebutTour(System.currentTimeMillis(), 1, 2));
+//					receiveFromServer(new ListInCombat(ar));
+//				});
+//			} catch (InterruptedException ex) {
+//				Logger.getLogger(MainControleur.class.getName()).log(Level.SEVERE, null, ex);
+//			}
+//		}).start();
 	}
 
 	public static final void receiveFromServer(Object pack) {
@@ -216,7 +210,7 @@ public class MainControleur {
 				String nomDonne = "nomD" + (ient * ieq + ient);
 				String nomClasse = "nomC" + (ient * ieq + ient);
 				int niveau = (int) (40 * Math.random());
-				Position pos = new Position((ient * ieq + ient) +10, (ient * ieq + ient) +10 + 1);
+				Position pos = new Position((ient * ieq + ient) +11, (ient * ieq + ient) +10 + 1);
 				Orientation o = Orientation.NORD;
 				CaracteristiquePhysique cp = new CaracteristiquePhysique((int) (200 * Math.random()), (int) (40000), (int) (10000 * Math.random()), (int) (190 * Math.random()), (int) (20 * Math.random()), (int) (400 * Math.random()));
 				ArrayList<InSortPassif> lsp = new ArrayList();

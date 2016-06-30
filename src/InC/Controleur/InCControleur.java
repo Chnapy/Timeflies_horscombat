@@ -6,11 +6,9 @@
 package InC.Controleur;
 
 import InC.Controleur.Listener.OnActionState;
-import InC.Controleur.Listener.OnButSAaction;
 import InC.Controleur.Listener.OnTileHover;
 import InC.Controleur.Listener.OnTilePressed;
 import InC.Modele.ActionState;
-import static InC.Modele.ActionState.DEPLACEMENT;
 import static InC.Modele.ActionState.WAIT;
 import InC.Modele.Binding.SortBinding;
 import InC.Vue.InCVue;
@@ -25,21 +23,10 @@ import InC.Modele.Pathfinding.ClosestHeuristic;
 import InC.Modele.Timer.TourTimer;
 import InC.Modele.Binding.TuileBinding;
 import InC.Modele.Donnees.Envoutement;
-import InC.Modele.Donnees.Equipe;
-import InC.Modele.Donnees.SortActif;
 import InC.Modele.Donnees.SortPassif;
-import InC.Modele.Timer.ActionSort;
 import InC.Modele.Timer.PileAction;
-import InC.Vue.HUD.Module.Sorts.ButSortActif;
 import InC.Vue.HUD.Module.Timeline.RowEntiteATL;
-import InC.Vue.Map.Grille.AbstractMap;
-import InC.Vue.Map.Grille.NotificationMap.Notification.AddEnvoutNotif;
-import InC.Vue.Map.Grille.NotificationMap.Notification.AddSPNotif;
-import InC.Vue.Map.Grille.NotificationMap.Notification.AlterCNotif;
-import InC.Vue.Map.Grille.NotificationMap.Notification.MortNotif;
-import InC.Vue.Map.Grille.NotificationMap.Notification.Notification;
 import InC.Vue.Map.VueEntite;
-import Main.Vue.DataVue;
 import Serializable.HorsCombat.Map.MapSerializable;
 import Serializable.InCombat.ChargementCombat;
 import Serializable.InCombat.TypeCarac;
@@ -49,7 +36,7 @@ import java.util.List;
 import javafx.scene.Node;
 import InC.Vue.Map.VueTuile;
 import static Main.Controleur.MainControleur.EXEC;
-import Main.Modele.TextManager;
+import Main.Modele.Data;
 import Serializable.InCombat.InCombat;
 import Serializable.InCombat.sort.LancerSort;
 import Serializable.InCombat.ListInCombat;
@@ -57,37 +44,21 @@ import Serializable.InCombat.Orientation;
 import static Serializable.InCombat.TypeCarac.VITESSE;
 import Serializable.InCombat.action.Action;
 import Serializable.InCombat.sort.ActionsToSort;
-import Serializable.InCombat.action.AddEnvoutement;
-import Serializable.InCombat.action.AddSortPassif;
-import Serializable.InCombat.action.AlterCarac;
-import Serializable.InCombat.action.Invocation;
 import Serializable.InCombat.action.ListActions;
-import Serializable.InCombat.action.Mort;
-import Serializable.InCombat.action.Rotation;
-import Serializable.InCombat.action.Teleportation;
-import Serializable.InCombat.donnee.InEntiteActive;
-import Serializable.InCombat.donnee.InEntitePassive;
 import Serializable.InCombat.sort.AnnulerSort;
 import Serializable.InCombat.sort.DeclencherSortPassif;
 import Serializable.InCombat.sort.Deplacement;
 import Serializable.InCombat.sort.ListDeplacement;
 import Serializable.InCombat.tour.Tour;
 import Serializable.InCombat.tour.DebutCombat;
-import Serializable.InCombat.tour.DebutTour;
-import Serializable.InCombat.tour.DebutTourGlobal;
-import Serializable.InCombat.tour.FinTour;
-import Serializable.InCombat.tour.FinTourGlobal;
 import Serializable.Position;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
+import javafx.scene.input.KeyCode;
 
 /**
  * InCControleur.java
@@ -95,8 +66,8 @@ import javafx.collections.MapChangeListener;
  */
 public class InCControleur extends Controleur<InCVue, InCombat> {
 
-	public Combat combatActu;
-	public Map map;
+	public final Combat combatActu;
+	public final Map map;
 	public final TourTimer timer;
 	public final PileAction pileAction;
 	public final ObjectProperty<ActionState> actionState;
@@ -106,8 +77,13 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 	public final ArrayList<Position> path;
 	public final ArrayList<Position> zoneAction;
 
-	public InCControleur() {
+	public final ActionControleur actionControleur;
+	public final TourControleur tourControleur;
+	public final SortControleur sortControleur;
+
+	public InCControleur(ChargementCombat pack, MapSerializable mapS) {
 		super(new InCVue());
+
 		timer = new TourTimer();
 		pileAction = new PileAction(this);
 		pathFinder = new AStarPathFinder(500, false, new ClosestHeuristic());
@@ -118,6 +94,30 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 		actionState = new SimpleObjectProperty();
 		actionState.addListener(new OnActionState(this));
 		ecran.maps.grille.effetsMap.setControleur(this);
+
+		combatActu = new Combat(pack);
+		map = new Map(mapS);
+		pathFinder.setMap(map);
+
+		actionControleur = new ActionControleur(this);
+		tourControleur = new TourControleur(this);
+		sortControleur = new SortControleur(this);
+		ecran.root.setOnKeyPressed((e) -> onKeyPressed(e.getCode()));
+		ecran.root.setOnKeyReleased((e) -> onKeyReleased(e.getCode()));
+	}
+	
+	private void onKeyPressed(KeyCode kc) {
+		if(kc == Data.HIDE_HUD) {
+			ecran.hud.hide();
+			ecran.hud.setMouseTransparent(true);
+		}
+	}
+	
+	private void onKeyReleased(KeyCode kc) {
+		if(kc == Data.HIDE_HUD) {
+			ecran.hud.show();
+			ecran.hud.setMouseTransparent(false);
+		}
 	}
 
 	@Override
@@ -145,10 +145,10 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 				tuiles[x][y].setBinding(tb);
 			}
 		}
-//		ecran.camera.initScale();
+		ecran.camera.initScale();
 	}
-
-	private void ajoutEntite(EntitePassive e) {
+	
+	public void ajoutEntite(EntitePassive e) {
 		map.listEntitesBinding.add(e.getBinding());
 
 		List<VueEntite> ventite = new ArrayList();
@@ -203,65 +203,6 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 		e.getBinding().addAll(ventite);
 	}
 
-	private void startTour(EntiteActive e, int idTour, long beginTime) {
-		ecran.hud.chat.chatCombat.startTour(idTour, e.idClasse, e.nomDonne.get(), e.caracs.get(TypeCarac.TEMPSACTION).first.get());
-		ecran.camera.moveToNode(ecran.maps.getEntiteSprite(e.idEntite));
-		entiteEnCours.set(e);
-		combatActu.tourActu.set(idTour);
-		entiteEnCours.get().getBinding().positionReference.set(e.getBinding().position.get());
-		entiteEnCours.get().getBinding().orientationReference.set(e.getBinding().orientation.get());
-		pileAction.setBeginTime(beginTime);
-		System.out.println("Start tour" + idTour + ", idJ:" + e.idJoueur + " idE:" + e.idEntite);
-		if (combatActu.dansMonEquipe(e)) {
-			setEntiteCoursData(e);
-			e.sortsA.values().forEach((sa) -> {
-				ButSortActif bsa = ecran.hud.barreSA.addSA(e, sa);
-				bsa.tButton.setOnAction(new OnButSAaction(this, sa));
-				bsa.disableProperty().bind(
-						sa.tempsAction.first.greaterThan(e.caracs.get(TypeCarac.TEMPSACTION).first.add(e.caracs.get(TypeCarac.TEMPSSUP).first)).or(
-						e.caracs.get(TypeCarac.TEMPSACTION).first.lessThanOrEqualTo(0d)
-				));
-			});
-			e.sortsP.values().forEach((sp) -> {
-				ecran.hud.barreSP.addSP(sp);
-			});
-			e.envoutements.forEach((env) -> {
-				ecran.hud.barreE.addE(env);
-			});
-			ecran.hud.pileA.lancer(e.caracs.get(TypeCarac.TEMPSACTION),
-					e.caracs.get(TypeCarac.TEMPSSUP));
-			actionState.set(DEPLACEMENT);
-		} else {
-			ecran.hud.timeline.setForceOpen(e.idEntite, true);
-		}
-
-		timer.start(e.caracs.get(TypeCarac.TEMPSACTION), e.caracs.get(TypeCarac.TEMPSSUP));
-	}
-
-	private void setEntiteCoursData(EntiteActive e) {
-		ecran.hud.entiteCours.setData(DataVue.getEntiteIcone(e.idClasse), e.equipe.colorCode, e.nomDonne, e.niveau, e.caracs.get(TypeCarac.VITALITE), e.caracs.get(TypeCarac.TEMPSACTION), e.caracs.get(TypeCarac.TEMPSSUP), e.caracs.get(TypeCarac.VITESSE), e.caracs.get(TypeCarac.FATIGUE), e.caracs.get(TypeCarac.INITIATIVE));
-		e.sortsA.values().forEach((sa) -> {
-			ecran.hud.entiteCours.addSA(sa);
-		});
-		e.sortsP.values().forEach((sp) -> {
-			ecran.hud.entiteCours.addSP(sp);
-		});
-		e.envoutements.forEach((env) -> {
-			ecran.hud.entiteCours.addE(env);
-		});
-	}
-
-	private void stopTour() {
-		System.out.println("End tour" + combatActu.tourActu.get());
-		actionState.set(WAIT);
-		timer.stop();
-		pileAction.clear();
-		map.clearMap();
-		ecran.hud.timeline.setForceOpen(entiteEnCours.get().idEntite, false);
-		entiteEnCours.get().caracs.get(TypeCarac.TEMPSACTION).first.set(entiteEnCours.get().caracs.get(TypeCarac.TEMPSACTION).second.get());
-		entiteEnCours.get().caracs.get(TypeCarac.TEMPSSUP).first.set(entiteEnCours.get().caracs.get(TypeCarac.TEMPSSUP).second.get());
-	}
-
 	private void bindTempsToFatigue(EntiteActive e) {
 		e.caracs.get(TypeCarac.TEMPSACTION).second.addListener((ov, t, t1) -> {
 			if (e.caracs.get(TypeCarac.TEMPSACTION).first
@@ -273,17 +214,6 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 		e.caracs.get(TypeCarac.TEMPSACTION).second.bind(
 				e.caracs.get(TypeCarac.FATIGUE).first.divide(-100d).add(1d).multiply(e.maxTempsAction)
 		);
-	}
-
-	private void startTourGlobal(int idTourG) {
-		System.out.println("Start tourG" + idTourG);
-		combatActu.tourGlobalActu.set(idTourG);
-		ecran.hud.chat.chatCombat.startTourGlobal(idTourG);
-	}
-
-	private void endTourGlobal() {
-		System.out.println("End tourG" + combatActu.tourGlobalActu.get());
-		ecran.hud.chat.chatCombat.endTourGlobal(combatActu.tourGlobalActu.get());
 	}
 
 	public void waitState() {
@@ -306,320 +236,33 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 		}
 	}
 
-	public void setMap(MapSerializable mapS) {
-		map = new Map(mapS);
-		pathFinder.setMap(map);
-	}
-
-	private void debutCombat(DebutCombat pack) {
-		if (pack.beginTime <= System.currentTimeMillis()) {
-			ecran.compteur.setVisible(false);
-			ecran.hud.chat.chatCombat.startCombat(0);
-			tour(pack.dtg);
-		} else {
-			ecran.hud.chat.chatCombat.startCombat((int) (pack.beginTime - System.currentTimeMillis()));
-			SimpleIntegerProperty bind = new SimpleIntegerProperty();
-			DoubleBinding pIndBind = new DoubleBinding() {
-				{
-					super.bind(bind);
-				}
-
-				@Override
-				protected double computeValue() {
-					return bind.doubleValue() % 1000 / 1000;
-				}
-			};
-			ecran.compteur.jc.pInd.progressProperty().bind(pIndBind);
-			ecran.compteur.jc.label.textProperty().bind(bind.divide(1000).asString());
-			long begin = System.nanoTime() - System.currentTimeMillis() * 1000000
-					+ pack.beginTime * 1000000;
-			new AnimationTimer() {
-				@Override
-				public void handle(long l) {
-					if (l < begin) {
-						bind.set((int) ((begin - l) / 1000000));
-					} else {
-						stop();
-						ecran.compteur.setVisible(false);
-						tour(pack.dtg);
-					}
-				}
-			}.start();
-		}
-	}
-
-	private void debutTour(DebutTour pack) {
-		try {
-			startTour((EntiteActive) combatActu.entites.get(pack.idEntite), pack.idTour, pack.beginTime);
-		} catch (ClassCastException e) {
-			System.err.println("Une entité passive ne peut pas jouer de tour !");
-		}
-	}
-
-	private void finTour(FinTour pack) {
-		if (pack.idTour != combatActu.tourActu.get()
-				|| pack.idEntite != entiteEnCours.get().idEntite) {
-			return;
-		}
-		ecran.hud.chat.chatCombat.endTour(combatActu.tourActu.get(),
-				entiteEnCours.get().idClasse,
-				entiteEnCours.get().nomDonne.get());
-		stopTour();
-	}
-
-	private void debutTourGlobal(DebutTourGlobal pack) {
-		definirOrdreJeu(pack.ordreJeu);
-		startTourGlobal(pack.idTG);
-		tour(pack.dt);
-	}
-
-	private void finTourGlobal(FinTourGlobal pack) {
-		if (pack.idTG != combatActu.tourGlobalActu.get()) {
-			return;
-		}
-		endTourGlobal();
-	}
-
-	private void definirOrdreJeu(long[] ordre) {
-		for (int i = 0; i < ordre.length; i++) {
-			combatActu.entites.get(ordre[i]).ordreJeu.set(i);
-		}
-		ecran.hud.timeline.sort();
-	}
-
-	private void tour(Tour pack) {
-		if (pack instanceof DebutTourGlobal) {
-			debutTourGlobal((DebutTourGlobal) pack);
-		} else if (pack instanceof FinTourGlobal) {
-			finTourGlobal((FinTourGlobal) pack);
-		} else if (pack instanceof DebutTour) {
-			debutTour((DebutTour) pack);
-		} else if (pack instanceof FinTour) {
-			finTour((FinTour) pack);
-		}
-		for (Action a : pack.actions) {
-			action(a);
-		}
-	}
-
-	public void action(Action pack) {
-		EntitePassive ep = combatActu.entites.get(pack.idCible);
-		boolean active = ep instanceof EntiteActive;
-		Notification n = null;
-		Position p = null;
-		if (pack instanceof AlterCarac) {
-//			System.out.println("ALTERCARAC: " + ((AlterCarac) pack).valeur);
-			Platform.runLater(() -> {
-				ep.caracs.get(((AlterCarac) pack).type).first.set(
-						ep.caracs.get(((AlterCarac) pack).type).first.get()
-						+ ((AlterCarac) pack).valeur
-				);
-			});
-			n = new AlterCNotif((AlterCarac) pack);
-			p = AbstractMap.getRealTilePos(
-					combatActu.entites.get(pack.idCible)
-					.getBinding().position.get()
-			);
-			ecran.hud.chat.chatCombat.addActionAlterCarac(ep.idClasse,
-					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
-					active, ((AlterCarac) pack).type, ((AlterCarac) pack).valeur);
-		} else if (pack instanceof Rotation) {
-			ep.getBinding().orientation.set(((Rotation) pack).direction);
-		} else if (pack instanceof Teleportation) {
-			ep.getBinding().position.set(((Teleportation) pack).posCible);
-		} else if (pack instanceof AddEnvoutement) {
-			ep.envoutements.add(new Envoutement(((AddEnvoutement) pack).idClasseSort,
-					((AddEnvoutement) pack).nbrTours));
-			n = new AddEnvoutNotif((AddEnvoutement) pack);
-			p = AbstractMap.getRealTilePos(
-					combatActu.entites.get(pack.idCible)
-					.getBinding().position.get()
-			);
-			ecran.hud.chat.chatCombat.addActionAddEnvoutement(ep.idClasse,
-					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
-					active, ((AddEnvoutement) pack).idClasseEnvoutement,
-					TextManager.getSortName(((AddEnvoutement) pack).idClasseEnvoutement).get(),
-					((AddEnvoutement) pack).nbrTours);
-		} else if (pack instanceof AddSortPassif) {
-			ep.sortsP.putIfAbsent(((AddSortPassif) pack).idClasseSP,
-					new SortPassif(((AddSortPassif) pack).idClasseSP, -1));
-			n = new AddSPNotif((AddSortPassif) pack);
-			p = AbstractMap.getRealTilePos(
-					combatActu.entites.get(pack.idCible)
-					.getBinding().position.get()
-			);
-			ecran.hud.chat.chatCombat.addActionDeclencherSortPassif(ep.idClasse,
-					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
-					active, ((AddSortPassif) pack).idClasseSP,
-					TextManager.getSortName(((AddSortPassif) pack).idClasseSP).get());
-		} else if (pack instanceof Mort) {
-			ep.getBinding().alive.set(false);
-			map.listEntitesBinding.remove(ep.getBinding());
-			n = new MortNotif((Mort) pack);
-			p = AbstractMap.getRealTilePos(
-					combatActu.entites.get(pack.idCible)
-					.getBinding().position.get()
-			);
-			ecran.hud.chat.chatCombat.addActionMort(ep.idClasse,
-					active ? ((EntiteActive) ep).nomDonne.get() : ep.nomClasse.get(),
-					active);
-		} else if (pack instanceof Invocation) {
-			InEntitePassive iep = ((Invocation) pack).invoc;
-			Equipe equipe = combatActu.equipes.get(((Invocation) pack).numeroEquipe);
-			EntitePassive e;
-			if (iep instanceof InEntiteActive) {
-				e = new EntiteActive((InEntiteActive) iep, equipe, ((InEntiteActive) iep).tempsDeplacement);
-			} else {
-				e = new EntitePassive(iep, equipe);
-			}
-			ajoutEntite(e);
-			ecran.hud.chat.chatCombat.addActionInvocation(iep.idClasse, e.nomClasse.get(), e instanceof EntiteActive);
-		}
-		if (n != null) {
-			ecran.maps.grille.notifMap.notifierAction(n, p);
-		}
-	}
-
-	private void ajouterSort(LancerSort pack) {
-		if (pack instanceof Deplacement) {
-			System.err.println("probleme : sort deplacement !");
-			return;
-		}
-		EntiteActive ea;
-		try {
-			ea = (EntiteActive) combatActu.entites.get(pack.idEntite);
-		} catch (ClassCastException e) {
-			System.err.println("Une entité passive ne peut pas lancer de sort !");
-			return;
-		}
-		if (pack.tour != combatActu.tourActu.get() || ea == null) {
-			System.err.println("probleme : tour ou entite incorrecte");
-			return;
-		}
-		SortActif sa;
-		if (pack.sort != null) {
-			sa = ea.sortsA.putIfAbsent(pack.idClasseSort, new SortActif(pack.sort));
-		} else {
-			sa = ea.sortsA.get(pack.idClasseSort);
-		}
-		if (sa == null) {
-			System.err.println("probleme : sort incorrecte");
-			return;
-		}
-
-		zoneAction.clear();
-		map.getZoneAction(pack.position, sa.zoneAction.getZoneIntermediaire(), zoneAction);
-		ActionSort as = new ActionSort(pack.idLancer,
-				(int) (pack.beginTime - pileAction.beginTime), sa,
-				pack.dureeLancer,
-				pack.idEntite,
-				getPositionReference(),
-				(ArrayList<Position>) zoneAction.clone(), pack.actions);
-		pileAction.addSort(as);
-	}
-
-	private void actionsToSort(ActionsToSort pack) {
-		try {
-			pileAction.getById(pack.idActionSort).actions = pack.actions;
-		} catch (NullPointerException e) {
-			System.err.println("ID non reconnu : " + pack.idActionSort);
-		}
-	}
-
-	private void annulerSort(AnnulerSort pack) {
-		pileAction.removeSort(pileAction.getById(pack.idActionSort));
-	}
-
-	private boolean ajouterDeplacement(Deplacement pack) {
-		if (pack.idEntite != entiteEnCours.get().idEntite) {
-			System.err.println("Une entité passive ne peut pas se déplacer !");
-			return false;
-		}
-		ActionSort as = new ActionSort(pack.idLancer,
-				(int) (pack.beginTime - pileAction.beginTime),
-				entiteEnCours.get().deplacement,
-				pack.dureeLancer,
-				pack.idEntite,
-				pack.previousPosition,
-				Arrays.asList(pack.position), pack.actions);
-		return pileAction.addSort(as);
-	}
-
-	private void listDeplacement(ListDeplacement pack) {
-		if (pack.deplacements.isEmpty()) {
-			return;
-		}
-		int i;
-		for (i = 0; i < pack.deplacements.size(); i++) {
-			if (!ajouterDeplacement(pack.deplacements.get(i))) {
-				break;
-			}
-		}
-		if (i > 0) {
-			entiteEnCours.get().getBinding().positionReference.set(
-					pack.deplacements.get(i - 1).position);
-			for (; i > 0; i--) {
-				for (Action a : pack.deplacements.get(i - 1).actions) {
-					if (a instanceof Rotation) {
-						entiteEnCours.get().getBinding().orientationReference.set(
-								((Rotation) a).direction);
-					}
-				}
-			}
-		}
-	}
-
-	private void declencherSortPassif(DeclencherSortPassif pack) {
-
-		EntitePassive ep = combatActu.entites.get(pack.idEntite);
-		if (pack.tour != combatActu.tourActu.get() || ep == null) {
-			System.err.println("probleme : tour ou entite incorrecte");
-			return;
-		}
-		SortPassif sp;
-		if (pack.sort != null) {
-			sp = ep.sortsP.putIfAbsent(pack.idClasseSort, new SortPassif(pack.sort));
-		} else {
-			sp = ep.sortsP.get(pack.idClasseSort);
-		}
-		if (sp == null) {
-			System.err.println("probleme : sort incorrecte");
-			return;
-		}
-		for (Action a : pack.actions) {
-			packetRecu(a);
-		}
-	}
-
 	@Override
 	public void packetRecu(InCombat pack) {
-		if (pack instanceof ChargementCombat) {
-			combatActu = new Combat((ChargementCombat) pack);
-		} else if (pack instanceof DebutCombat) {
-			debutCombat((DebutCombat) pack);
+		if (pack instanceof DebutCombat) {
+			tourControleur.debutCombat((DebutCombat) pack);
 		} else {
 			long now = System.currentTimeMillis();
 			if (pack.beginTime <= now) {
 				if (pack instanceof Tour) {
-					tour((Tour) pack);
+					tourControleur.tour((Tour) pack);
 				} else if (pack instanceof Action) {
-					action((Action) pack);
+					actionControleur.action((Action) pack);
 				} else if (pack instanceof ListActions) {
-					((ListActions) pack).actions.forEach((a) -> action(a));
+					((ListActions) pack).actions.forEach((a) -> actionControleur.action(a));
 				} else if (pack instanceof ListInCombat) {
 					((ListInCombat) pack).listInCombat.forEach((a) -> packetRecu(a));
 				} else if (pack instanceof Deplacement) {
-					ajouterDeplacement((Deplacement) pack);
+					sortControleur.ajouterDeplacement((Deplacement) pack);
 				} else if (pack instanceof LancerSort) {
-					ajouterSort((LancerSort) pack);
+					sortControleur.ajouterSort((LancerSort) pack);
 				} else if (pack instanceof ActionsToSort) {
-					actionsToSort((ActionsToSort) pack);
+					sortControleur.actionsToSort((ActionsToSort) pack);
 				} else if (pack instanceof AnnulerSort) {
-					annulerSort((AnnulerSort) pack);
+					sortControleur.annulerSort((AnnulerSort) pack);
 				} else if (pack instanceof ListDeplacement) {
-					listDeplacement((ListDeplacement) pack);
+					sortControleur.listDeplacement((ListDeplacement) pack);
 				} else if (pack instanceof DeclencherSortPassif) {
-					declencherSortPassif((DeclencherSortPassif) pack);
+					sortControleur.declencherSortPassif((DeclencherSortPassif) pack);
 				} else {
 					System.err.println("PAQUET NON RECONNU : " + pack);
 				}
@@ -645,7 +288,7 @@ public class InCControleur extends Controleur<InCVue, InCombat> {
 	}
 
 	public void stop() {
-		stopTour();
+		tourControleur.stopTour();
 	}
 
 }

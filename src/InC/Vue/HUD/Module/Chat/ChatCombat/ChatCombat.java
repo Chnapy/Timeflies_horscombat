@@ -5,6 +5,7 @@
  */
 package InC.Vue.HUD.Module.Chat.ChatCombat;
 
+import InC.Vue.HUD.Module.Chat.ChatBox;
 import InC.Vue.HUD.Module.Chat.ChatCombat.ChatAction.ChatAction;
 import InC.Vue.HUD.Module.Chat.ChatCombat.ChatAction.ChatAddEnvoutement;
 import InC.Vue.HUD.Module.Chat.ChatCombat.ChatAction.ChatAlterCarac;
@@ -17,28 +18,20 @@ import InC.Vue.HUD.Module.Chat.ChatCombat.ChatTour.ChatDebutTour;
 import InC.Vue.HUD.Module.Chat.ChatCombat.ChatTour.ChatDebutTourGlobal;
 import InC.Vue.HUD.Module.Chat.ChatCombat.ChatTour.ChatDebutCombat;
 import Serializable.InCombat.TypeCarac;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
+import javafx.application.Platform;
 
 /**
  * ChatCombat.java
  *
  */
-public class ChatCombat extends ScrollPane {
+public class ChatCombat extends ChatBox {
 
-	private final VBox content;
 	private ChatDebutTourGlobal tgActu;
 	private ChatDebutTour tActu;
 	private ChatLancerSort sActu;
 
 	public ChatCombat() {
 		setId("chatcombat");
-		content = new VBox();
-		setContent(content);
-
-		setFitToWidth(true);
-		setFitToHeight(true);
-		setHbarPolicy(ScrollBarPolicy.NEVER);
 	}
 
 	public void addActionInvocation(int idClasseInvocation, String nomInvocation, boolean active) {
@@ -49,12 +42,12 @@ public class ChatCombat extends ScrollPane {
 		addAction(new ChatMort(idClasseCible, nomCible, active));
 	}
 
-	public void addActionDeclencherSortPassif(int idClasseCible, String nomCible, boolean active, 
+	public void addActionDeclencherSortPassif(int idClasseCible, String nomCible, boolean active,
 			int idClasseSort, String nomSort) {
 		addAction(new ChatDeclencherSortPassif(idClasseCible, nomCible, active, idClasseSort, nomSort));
 	}
 
-	public void addActionAddEnvoutement(int idClasseCible, String nomCible, boolean active, 
+	public void addActionAddEnvoutement(int idClasseCible, String nomCible, boolean active,
 			int idClasseEnvoutement, String nomEnvoutement, int nbrTours) {
 		addAction(new ChatAddEnvoutement(idClasseCible, nomCible, active, idClasseEnvoutement, nomEnvoutement, nbrTours));
 	}
@@ -65,58 +58,76 @@ public class ChatCombat extends ScrollPane {
 	}
 
 	private void addAction(ChatAction action) {
-		try {
-			sActu.add(action);
-		} catch (NullPointerException e1) {
+		Platform.runLater(() -> {
 			try {
-				tActu.add(action);
-			} catch (NullPointerException e2) {
+				sActu.add(action);
+			} catch (NullPointerException e1) {
 				try {
-					tgActu.add(action);
-				} catch (NullPointerException e3) {
-					content.getChildren().add(action);
+					tActu.add(action);
+				} catch (NullPointerException e2) {
+					try {
+						tgActu.add(action);
+					} catch (NullPointerException e3) {
+						addToContent(action);
+					}
 				}
 			}
-		}
+		});
 	}
 
 	public void annulerSort() {
-		sActu.add(new ChatAnnulation());
-		sActu = null;
+		Platform.runLater(() -> {
+			sActu.add(new ChatAnnulation());
+			sActu = null;
+		});
 	}
 
 	public void startDeplacement(int idLancer, int ta) {
-		sActu = new ChatLancerDeplacement(idLancer, ta);
-		tActu.add(sActu);
+		Platform.runLater(() -> {
+			if (sActu instanceof ChatLancerDeplacement) {
+				sActu.getTop().getChatTemps().addVal((double) (ta / 100) / 10);
+			} else {
+				sActu = new ChatLancerDeplacement(idLancer, ta);
+				tActu.add(sActu);
+			}
+		});
 	}
 
 	public void startSort(int idLancer, int idS, String nomSort, int ta) {
-		sActu = new ChatLancerSort(idLancer, idS, nomSort, ta);
-		tActu.add(sActu);
+		Platform.runLater(() -> {
+			sActu = new ChatLancerSort(idLancer, idS, nomSort, ta);
+			tActu.add(sActu);
+		});
 	}
 
 	public void startTour(int idT, int idClasse, String nomEntite, int ta) {
-		tActu = new ChatDebutTour(idT, idClasse, nomEntite, ta);
-		tgActu.add(tActu);
+		Platform.runLater(() -> {
+			tActu = new ChatDebutTour(idT, idClasse, nomEntite, ta);
+			tgActu.add(tActu);
+		});
 	}
 
 	public void endTour(int idT, int idClasse, String nomEntite) {
-		tActu.getChildren().add(new ChatFinTour(idT, idClasse, nomEntite));
-		tActu = null;
+		Platform.runLater(() -> {
+			tActu.getChildren().add(new ChatFinTour(idT, idClasse, nomEntite));
+			tActu = null;
+		});
 	}
 
 	public void startTourGlobal(int idTG) {
 		tgActu = new ChatDebutTourGlobal(idTG);
-		content.getChildren().add(tgActu);
+		addToContent(tgActu);
 	}
 
 	public void endTourGlobal(int idTG) {
-		tgActu.getChildren().add(new ChatFinTourGlobal(idTG));
-		tgActu = null;
+		Platform.runLater(() -> {
+			tgActu.getChildren().add(new ChatFinTourGlobal(idTG));
+			tgActu = null;
+		});
 	}
 
 	public void startCombat(int compteur) {
-		content.getChildren().add(new ChatDebutCombat(compteur));
+		addToContent(new ChatDebutCombat(compteur));
 	}
 
 }

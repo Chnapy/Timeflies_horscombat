@@ -15,7 +15,7 @@ public class ChatLancerSort extends ChatCBox {
 		super(new ChatCMessage(
 				new ChatSort(idS, nomSort),
 				" - ",
-				new ChatTemps((double) (ta / 100) / 10 + "s")
+				new ChatTemps((double) (ta / 100) / 10, "s")
 		));
 		getStyleClass().addAll("chatlancersort", "chat" + idLancer % 2);
 	}

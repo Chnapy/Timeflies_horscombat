@@ -8,12 +8,13 @@ package InC.Vue.HUD;
 import InC.Vue.HUD.Module.Barres.BarreEnvoutements;
 import InC.Vue.HUD.Module.Barres.BarreSortsActifs;
 import InC.Vue.HUD.Module.Barres.BarreSortsPassifs;
-import InC.Vue.HUD.Module.Chat.ChatBox;
+import InC.Vue.HUD.Module.Chat.ChatModule;
 import InC.Vue.HUD.Module.Divers;
 import InC.Vue.HUD.Module.EntiteCours;
 import InC.Vue.Map.Minimap.Minimap;
 import InC.Vue.HUD.Module.PileBox;
 import InC.Vue.HUD.Module.Timeline.Timeline;
+import javafx.animation.FadeTransition;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * HUD.java
@@ -29,15 +31,14 @@ import javafx.scene.layout.VBox;
  */
 public class HUD extends AnchorPane {
 
-	private static final double MARGIN = 5;
-
-	public static final double TIMELINE_PREFWIDTH = 420, TIMELINE_MAXWIDTH = 1000,
+	public static final double MARGIN = 5, TIMELINE_PREFWIDTH = 420, TIMELINE_MAXWIDTH = 1000,
 			CHAT_WIDTH = 300, CHAT_HEIGHT = 300,
 			MINIMAP_WIDTH = 100, MINIMAP_HEIGHT = MINIMAP_WIDTH,
 			BARRE_SA_HEIGHT = 50, BARRE_SP_HEIGHT = 20, BARRE_E_HEIGHT = BARRE_SP_HEIGHT,
 			PILE_A_HEIGHT = 100, DIVERS_WIDTH = 100, DIVERS_HEIGHT = 50, ENTITECOURS_HEIGHT = 200;
+	private static final Duration D_FADE = new Duration(300);
 
-	public final ChatBox chat;
+	public final ChatModule chat;
 	public final BarreSortsActifs barreSA;
 	public final BarreSortsPassifs barreSP;
 	public final BarreEnvoutements barreE;
@@ -47,11 +48,13 @@ public class HUD extends AnchorPane {
 	public final PileBox pileA;
 	public final Divers divers;
 
+	private final FadeTransition transition;
+
 	public HUD(Minimap minimap) {
 		setId("hud");
 		setPadding(new Insets(MARGIN));
 
-		chat = new ChatBox();
+		chat = new ChatModule();
 		chat.setPrefSize(CHAT_WIDTH, CHAT_HEIGHT);
 
 		barreSA = new BarreSortsActifs();
@@ -125,24 +128,19 @@ public class HUD extends AnchorPane {
 		AnchorPane.setBottomAnchor(right, 0d);
 		AnchorPane.setTopAnchor(right, 0d);
 
-		debug();
+		transition = new FadeTransition(D_FADE, this);
 	}
-
-	private void debug() {
-//		barreSA.addSA(DataVue.getSortIcone(0), new SimpleIntegerProperty(5400), new SimpleIntegerProperty(1), new SimpleIntegerProperty(8), 12);
-//		barreSP.addButton(new BarreSortsPassifs.ButSortPassif(DataVue.getSortIcone(1)));
-//		barreE.addButton(new BarreEnvoutements.ButEnvoutement(DataVue.getSortIcone(2)));
-
-//		pileA.lancer(30000);
-//		pileA.addSort(DataVue.getSortIcone(0), 100, 1500);
-//		pileA.addSort(DataVue.getSortIcone(1), 5000, 3000);
-//		pileA.addSort(DataVue.getSortIcone(2), 8500, 5000);
-//		pileA.addSort(DataVue.getSortIcone(3), 28000, 1000);
-//		ValeurCarac<IntegerProperty> vie = new ValeurCarac(new SimpleIntegerProperty(), new SimpleIntegerProperty());
-//		vie.first.set(40);
-//		vie.second.set(90);
-//		timeline.addEntiteActive(-1, -1, "FF0000", "Jojo", 18, vie, vie, vie, vie, vie, vie);
-//		timeline.addEntiteActive(0, -1, "FF0000", "Jojo", 18, vie, vie, vie, vie, vie, vie);
+	
+	public void show() {
+		transition.setFromValue(getOpacity());
+		transition.setToValue(1);
+		transition.playFromStart();
+	}
+	
+	public void hide() {
+		transition.setFromValue(getOpacity());
+		transition.setToValue(0);
+		transition.playFromStart();
 	}
 
 }

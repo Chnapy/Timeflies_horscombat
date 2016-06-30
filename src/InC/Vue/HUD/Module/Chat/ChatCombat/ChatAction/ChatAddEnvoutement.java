@@ -21,7 +21,7 @@ public class ChatAddEnvoutement extends ChatAction {
 				" gagne l'envoutement ",
 				new ChatSort(idClasseEnvoutement, nomEnvoutement),
 				" - ",
-				new ChatTemps(nbrTours + "trs")
+				new ChatTemps(nbrTours, "trs", false)
 		);
 	}
 
